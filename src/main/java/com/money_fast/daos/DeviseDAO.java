@@ -1,18 +1,11 @@
 package com.money_fast.daos;
 
-import java.io.Serializable;
+import java.util.List;
 
-public class DeviseDAO implements Serializable {
-    private static final long serialVersionUID = 1L;
+import com.money_fast.beans.Devise;
 
-    private Integer idDevise;
-    private String libelle;
+public interface DeviseDAO {
+	Devise findById(Integer idDevise);
 
-    public DeviseDAO() {}
-
-    public Integer getIdDevise() { return idDevise; }
-    public void setIdDevise(Integer idDevise) { this.idDevise = idDevise; }
-
-    public String getLibelle() { return libelle; }
-    public void setLibelle(String libelle) { this.libelle = libelle; }
+	List<Devise> findAll();
 }
