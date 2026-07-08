@@ -5,15 +5,15 @@ import java.util.List;
 import com.money_fast.beans.Compte;
 
 public interface CompteDAO {
-	void create(Compte compte);
+	boolean create(Compte compte);
 
+	boolean update(Compte compte);
+
+	boolean delete(Integer idCompte);
+	
 	Compte findById(Integer idCompte);
 
 	List<Compte> findByIdClient(Integer idClient);
 
 	List<Compte> findAll();
-
-	void update(Compte compte);
-
-	void delete(Integer idCompte);
 }

@@ -5,13 +5,13 @@ import java.util.List;
 import com.money_fast.beans.Client;
 
 public interface ClientDAO {
-	void create(Client client);
+	boolean create(Client client);
 
-	Client findById(Integer idClient);
+	boolean update(Client client);
+
+	boolean delete(Integer idClient);
 
 	List<Client> findLike(Client client);
 
-	void update(Client client);
-
-	void delete(Integer idClient);
+	List<Client> findAll();
 }
