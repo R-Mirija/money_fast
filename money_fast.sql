@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `comptes` (
   `numero_compte` int NOT NULL,
   `devise` int NOT NULL,
   `solde` double NOT NULL,
-  `plalfond_journalier` double UNSIGNED NOT NULL,
+  `plafond_journalier` double UNSIGNED NOT NULL,
   `plafond_transaction` double UNSIGNED NOT NULL,
   `date_ouverture` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `statut_compte` set('actif','suspendu','fermé') NOT NULL,
