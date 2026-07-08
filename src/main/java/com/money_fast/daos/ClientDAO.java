@@ -9,9 +9,7 @@ public interface ClientDAO {
 
 	Client findById(Integer idClient);
 
-	Client findByMail(String mail);
-
-	List<Client> findAll();
+	List<Client> findLike(Client client);
 
 	void update(Client client);
 

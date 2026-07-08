@@ -5,6 +5,7 @@ import java.util.List;
 import com.money_fast.beans.Pays;
 
 public interface PaysDAO {
-    Pays findById(Integer idDevise);
-    List<Pays> findAll();
+	Pays findById(Integer idDevise);
+
+	List<Pays> findAll();
 }
