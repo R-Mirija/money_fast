@@ -61,9 +61,8 @@ public class ClientDAOImpl implements ClientDAO {
 			ps.setInt(5, client.getDevisePreferee());
 			ps.setString(6, client.getMail());
 			ps.setInt(7, client.getIdClient());
-			ps.executeUpdate();
 
-			return true;
+			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
