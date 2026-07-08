@@ -20,7 +20,7 @@ public class CompteDAOImpl implements CompteDAO {
 	public boolean create(Compte compte) {
 		compte.setSolde(0.0);
 		compte.setNumeroCompte(generateUniqueNumeroCompte());
-		
+
 		if (compte.getStatutCompte() == null) {
 			compte.setStatutCompte(StatutCompte.ACTIF);
 		}
