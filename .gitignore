@@ -1,0 +1,9 @@
+/build/
+
+.settings/
+.project
+.classpath
+.env
+
+PROJET 11.pdf
+/target/
