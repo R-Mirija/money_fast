@@ -17,20 +17,20 @@ import com.moneyfast.model.Pays;
 import com.moneyfast.repository.ClientRepository;
 import com.moneyfast.repository.CompteRepository;
 import com.moneyfast.repository.MetadataRepository;
-import com.moneyfast.repository.MySQLClientRepository;
-import com.moneyfast.repository.MySQLCompteRepository;
-import com.moneyfast.repository.MySQLMetadataRepository;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
 
 
 @WebServlet("/clients")
 public class ClientServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private final ClientRepository clientRepository = new MySQLClientRepository();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
     
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
     
-    private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
+    private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Client> liste = clientRepository.findAll();

@@ -9,24 +9,24 @@ import com.moneyfast.model.TauxDeChange;
 import com.moneyfast.repository.ClientRepository;
 import com.moneyfast.repository.CompteRepository;
 import com.moneyfast.repository.MetadataRepository;
-import com.moneyfast.repository.MySQLClientRepository;
-import com.moneyfast.repository.MySQLCompteRepository;
-import com.moneyfast.repository.MySQLMetadataRepository;
-import com.moneyfast.repository.MySQLNotificationRepository;
-import com.moneyfast.repository.MySQLTauxRepository;
-import com.moneyfast.repository.MySQLTransfertRepository;
 import com.moneyfast.repository.NotificationRepository;
 import com.moneyfast.repository.TauxRepository;
 import com.moneyfast.repository.TransfertRepository;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
+import com.moneyfast.repository.repository_impl.NotificationRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TauxRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
 
 public class TransfertService {
 
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
-    private final TransfertRepository transfertRepository = new MySQLTransfertRepository();
-    private final NotificationRepository notificationRepository = new MySQLNotificationRepository();
-    private final ClientRepository clientRepository = new MySQLClientRepository();
-    private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
-    private final TauxRepository tauxRepository = new MySQLTauxRepository();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
+    private final TransfertRepository transfertRepository = new TransfertRepositoryImpl();
+    private final NotificationRepository notificationRepository = new NotificationRepositoryImpl();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
+    private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
+    private final TauxRepository tauxRepository = new TauxRepositoryImpl();
     
     public Transfert effectuerTransfert(String telCompteSource, String telCompteDest, double montantEnvoye, String raison) {
     	

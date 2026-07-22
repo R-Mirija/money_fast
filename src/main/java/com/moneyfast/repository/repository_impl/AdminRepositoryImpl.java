@@ -1,9 +1,11 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import com.moneyfast.model.Admin;
+import com.moneyfast.repository.AdminRepository;
+import com.moneyfast.repository.DBConnection;
 
-public class MySQLAdminRepository implements AdminRepository {
+public class AdminRepositoryImpl implements AdminRepository {
 
     @Override
     public void save(Admin admin) {

@@ -1,13 +1,15 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import com.moneyfast.model.Transfert;
+import com.moneyfast.repository.DBConnection;
+import com.moneyfast.repository.TransfertRepository;
 
 
-public class MySQLTransfertRepository implements TransfertRepository {
+public class TransfertRepositoryImpl implements TransfertRepository {
 
 	@Override
 	public void save(Transfert transfert) {

@@ -6,12 +6,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import com.moneyfast.repository.MySQLStatsRepository;
+
 import com.moneyfast.repository.StatsRepository;
+import com.moneyfast.repository.repository_impl.StatsRepositoryImpl;
 
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
-    private final StatsRepository statsRepository = new MySQLStatsRepository();
+    private final StatsRepository statsRepository = new StatsRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("totalRecettes", statsRepository.getTotalRecettes());

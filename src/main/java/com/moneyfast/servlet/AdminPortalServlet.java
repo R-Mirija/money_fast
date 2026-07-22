@@ -9,14 +9,14 @@ import java.io.IOException;
 
 import com.moneyfast.model.Admin;
 import com.moneyfast.repository.AdminRepository;
-import com.moneyfast.repository.MySQLAdminRepository;
+import com.moneyfast.repository.repository_impl.AdminRepositoryImpl;
 import com.moneyfast.util.PasswordUtil;
 
 @WebServlet("/admin-portal")
 public class AdminPortalServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final AdminRepository adminRepository = new MySQLAdminRepository();
+    private final AdminRepository adminRepository = new AdminRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");

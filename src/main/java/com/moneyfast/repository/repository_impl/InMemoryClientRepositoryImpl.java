@@ -1,10 +1,11 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.moneyfast.model.Client;
+import com.moneyfast.repository.ClientRepository;
 
-public class InMemoryClientRepository implements ClientRepository {
+public class InMemoryClientRepositoryImpl implements ClientRepository {
     
     private static final List<Client> clients = new ArrayList<>();
     private static Long currentId = 1L;

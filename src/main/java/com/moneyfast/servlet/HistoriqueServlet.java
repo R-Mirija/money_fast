@@ -13,18 +13,18 @@ import com.moneyfast.model.Compte;
 import com.moneyfast.model.Transfert;
 import com.moneyfast.repository.ClientRepository;
 import com.moneyfast.repository.CompteRepository;
-import com.moneyfast.repository.MySQLClientRepository;
-import com.moneyfast.repository.MySQLCompteRepository;
-import com.moneyfast.repository.MySQLTransfertRepository;
 import com.moneyfast.repository.TransfertRepository;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
 
 @WebServlet("/historique")
 public class HistoriqueServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final ClientRepository clientRepository = new MySQLClientRepository();
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
-    private final TransfertRepository transfertRepository = new MySQLTransfertRepository();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
+    private final TransfertRepository transfertRepository = new TransfertRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String telephone = request.getParameter("telephone");

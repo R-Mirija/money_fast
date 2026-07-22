@@ -1,11 +1,13 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.moneyfast.model.Compte;
+import com.moneyfast.repository.CompteRepository;
+import com.moneyfast.repository.DBConnection;
 
-public class MySQLCompteRepository implements CompteRepository {
+public class CompteRepositoryImpl implements CompteRepository {
 
     @Override
     public void save(Compte compte) {

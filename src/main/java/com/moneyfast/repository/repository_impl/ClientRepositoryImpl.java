@@ -1,11 +1,13 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.moneyfast.model.Client;
+import com.moneyfast.repository.ClientRepository;
+import com.moneyfast.repository.DBConnection;
 
-public class MySQLClientRepository implements ClientRepository {
+public class ClientRepositoryImpl implements ClientRepository {
 
 	@Override
     public void save(Client client) {

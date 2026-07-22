@@ -14,15 +14,18 @@ import com.moneyfast.model.Compte;
 import com.moneyfast.model.Devise;
 import com.moneyfast.model.Pays;
 import com.moneyfast.repository.*;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
 import com.moneyfast.util.PasswordUtil;
 
 @WebServlet("/client-portal")
 public class ClientPortalServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final ClientRepository clientRepository = new MySQLClientRepository();
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
-    private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
+    private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -50,7 +53,6 @@ public class ClientPortalServlet extends HttpServlet {
             Client client = clientRepository.findByTelephone(telephone);
 
             if (client != null) {
-
                 request.getSession().setAttribute("userClient", client);
                 response.sendRedirect("client-dashboard");
             } else {

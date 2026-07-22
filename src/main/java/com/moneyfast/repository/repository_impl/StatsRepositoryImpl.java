@@ -1,11 +1,14 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class MySQLStatsRepository implements StatsRepository {
+import com.moneyfast.repository.DBConnection;
+import com.moneyfast.repository.StatsRepository;
+
+public class StatsRepositoryImpl implements StatsRepository {
 
     @Override
     public double getTotalRecettes() {

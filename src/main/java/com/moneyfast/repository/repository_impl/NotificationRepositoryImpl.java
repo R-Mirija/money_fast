@@ -1,9 +1,11 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import com.moneyfast.model.Notification;
+import com.moneyfast.repository.DBConnection;
+import com.moneyfast.repository.NotificationRepository;
 
-public class MySQLNotificationRepository implements NotificationRepository {
+public class NotificationRepositoryImpl implements NotificationRepository {
 
     @Override
     public void save(Notification notification) {

@@ -1,12 +1,14 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.moneyfast.model.Pays;
+import com.moneyfast.repository.DBConnection;
+import com.moneyfast.repository.MetadataRepository;
 import com.moneyfast.model.Devise;
 
-public class MySQLMetadataRepository implements MetadataRepository {
+public class MetadataRepositoryImpl implements MetadataRepository {
 
 	@Override
 	public List<Pays> findAllPays() {

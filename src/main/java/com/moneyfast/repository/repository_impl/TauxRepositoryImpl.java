@@ -1,11 +1,13 @@
-package com.moneyfast.repository;
+package com.moneyfast.repository.repository_impl;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.moneyfast.model.TauxDeChange;
+import com.moneyfast.repository.DBConnection;
+import com.moneyfast.repository.TauxRepository;
 
-public class MySQLTauxRepository implements TauxRepository {
+public class TauxRepositoryImpl implements TauxRepository {
 
     @Override
     public void save(TauxDeChange taux) {

@@ -13,15 +13,19 @@ import com.moneyfast.model.Client;
 import com.moneyfast.model.Compte;
 import com.moneyfast.model.Transfert;
 import com.moneyfast.repository.*;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
 
 @WebServlet("/recu-pdf")
 public class RecuPDFServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final TransfertRepository transfertRepository = new MySQLTransfertRepository();
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
-    private final ClientRepository clientRepository = new MySQLClientRepository();
-    private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
+    private final TransfertRepository transfertRepository = new TransfertRepositoryImpl();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
+    private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

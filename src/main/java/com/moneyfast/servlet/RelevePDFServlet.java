@@ -16,15 +16,19 @@ import com.moneyfast.model.Client;
 import com.moneyfast.model.Compte;
 import com.moneyfast.model.Transfert;
 import com.moneyfast.repository.*;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
 
 @WebServlet("/releve-pdf")
 public class RelevePDFServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final ClientRepository clientRepository = new MySQLClientRepository();
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
-    private final TransfertRepository transfertRepository = new MySQLTransfertRepository();
-    private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
+    private final TransfertRepository transfertRepository = new TransfertRepositoryImpl();
+    private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String telephone = request.getParameter("telephone");

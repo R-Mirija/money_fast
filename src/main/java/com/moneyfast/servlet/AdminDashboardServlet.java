@@ -16,19 +16,26 @@ import com.moneyfast.model.Transfert;
 import com.moneyfast.model.TauxDeChange;
 import com.moneyfast.model.Devise;
 import com.moneyfast.repository.*;
+import com.moneyfast.repository.repository_impl.AdminRepositoryImpl;
+import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
+import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
+import com.moneyfast.repository.repository_impl.StatsRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TauxRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
 import com.moneyfast.util.PasswordUtil;
 
 @WebServlet("/admin-dashboard")
 public class AdminDashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private final AdminRepository adminRepository = new MySQLAdminRepository();
-    private final ClientRepository clientRepository = new MySQLClientRepository();
-    private final CompteRepository compteRepository = new MySQLCompteRepository();
-    private final TransfertRepository transfertRepository = new MySQLTransfertRepository();
-    private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
-    private final StatsRepository statsRepository = new MySQLStatsRepository();
-    private final TauxRepository tauxRepository = new MySQLTauxRepository();
+    private final AdminRepository adminRepository = new AdminRepositoryImpl();
+    private final ClientRepository clientRepository = new ClientRepositoryImpl();
+    private final CompteRepository compteRepository = new CompteRepositoryImpl();
+    private final TransfertRepository transfertRepository = new TransfertRepositoryImpl();
+    private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
+    private final StatsRepository statsRepository = new StatsRepositoryImpl();
+    private final TauxRepository tauxRepository = new TauxRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Admin admin = (Admin) request.getSession().getAttribute("userAdmin");
