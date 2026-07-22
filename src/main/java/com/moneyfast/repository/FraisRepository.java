@@ -20,5 +20,7 @@ public interface FraisRepository {
 
   void save(Frais frais);
 
+  void update(Frais frais);
+
   void delete(int idFrais);
 }

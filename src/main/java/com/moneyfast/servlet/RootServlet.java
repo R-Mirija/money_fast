@@ -13,18 +13,17 @@ public class RootServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     HttpSession session = req.getSession(false);
-    String viewPath = "/WEB-INF/views";
 
     if (session != null && session.getAttribute("userClient") != null) {
-      req.getRequestDispatcher(viewPath + "/client-dashboard.jsp").forward(req, resp);
+      resp.sendRedirect(req.getContextPath() + "/client-dashboard");
       return;
     }
 
     if (session != null && session.getAttribute("userAdmin") != null) {
-      req.getRequestDispatcher(viewPath + "/admin-dashboard.jsp").forward(req, resp);
+      resp.sendRedirect(req.getContextPath() + "/admin-dashboard");
       return;
     }
 
-    req.getRequestDispatcher(viewPath + "/client-portal.jsp").forward(req, resp);
+    resp.sendRedirect(req.getContextPath() + "/client-portal");
   }
 }

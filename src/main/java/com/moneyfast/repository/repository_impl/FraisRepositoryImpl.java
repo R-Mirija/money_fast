@@ -113,6 +113,40 @@ public class FraisRepositoryImpl implements FraisRepository {
   }
 
   @Override
+  public void update(Frais frais) {
+    String sql = "UPDATE frais_envoi SET " +
+        "code_frais = ?, " +
+        "devise_frais = ?, " +
+        "montant_min = ?, " +
+        "montant_max = ?, " +
+        "type_frais = ?, " +
+        "valeur_frais = ?, " +
+        "date_debut_validite = ?, " +
+        "date_fin_validite = ?, " +
+        "active = ? " +
+        "WHERE id_frais = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+
+      ps.setInt(1, frais.getCodeFrais());
+      ps.setInt(2, frais.getDeviseFrais());
+      ps.setDouble(3, frais.getMontantMin());
+      ps.setDouble(4, frais.getMontantMax());
+      ps.setInt(5, frais.getTypeFrais());
+      ps.setDouble(6, frais.getValeurFrais());
+      ps.setTimestamp(7, frais.getDateDebutValidite());
+      ps.setTimestamp(8, frais.getDateFinValidite());
+      ps.setBoolean(9, frais.isActive());
+      ps.setInt(10, frais.getIdFrais());
+
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override
   public void delete(int idFrais) {
     String sql = "DELETE FROM frais_envoi WHERE id_frais = ?";
 
