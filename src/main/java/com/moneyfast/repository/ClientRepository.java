@@ -10,5 +10,6 @@ public interface ClientRepository {
     Client findByTelephone(String telephone);
     List<Client> findAll();                
     void update(Client client);            
-    void delete(Long id);                  
+    void delete(Long id);
+    void updatePassword(Long idClient, String hashedPassword);
 }

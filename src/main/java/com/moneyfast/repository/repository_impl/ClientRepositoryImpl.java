@@ -165,4 +165,16 @@ public class ClientRepositoryImpl implements ClientRepository {
         
         return client;
     }
+    @Override
+    public void updatePassword(Long idClient, String hashedPassword) {
+        String sql = "UPDATE clients SET password = ? WHERE id_client = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, hashedPassword);
+            stmt.setLong(2, idClient);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
