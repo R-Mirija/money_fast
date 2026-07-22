@@ -48,7 +48,6 @@ public class AdminPortalServlet extends HttpServlet {
                 String hashedPassword = PasswordUtil.hashPassword(passwordPlain);
                 
                 if (admin.getPassword().equals(hashedPassword)) {
-
                     request.getSession().setAttribute("userAdmin", admin);
                     response.sendRedirect("admin-dashboard");
                 } else {

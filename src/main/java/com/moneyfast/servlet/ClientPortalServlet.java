@@ -26,8 +26,9 @@ public class ClientPortalServlet extends HttpServlet {
     private final ClientRepository clientRepository = new ClientRepositoryImpl();
     private final CompteRepository compteRepository = new CompteRepositoryImpl();
     private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
-    
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
 
         if ("logout".equals(action)) {
@@ -44,25 +45,38 @@ public class ClientPortalServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/client-portal.jsp").forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         String action = request.getParameter("action");
 
         if ("login".equals(action)) {
             String telephone = request.getParameter("telephone");
+            String password = request.getParameter("password");
+
             Client client = clientRepository.findByTelephone(telephone);
 
-            if (client != null) {
-                request.getSession().setAttribute("userClient", client);
-                response.sendRedirect("client-dashboard");
-            } else {
+            if (client == null) {
 
-                request.getSession().setAttribute("erreur", "Ce numéro n'a pas encore de compte. Inscrivez-vous ci-dessous !");
+                request.getSession().setAttribute("erreur",
+                        "Ce numéro n'a pas encore de compte. Inscrivez-vous ci-dessous !");
                 request.setAttribute("prefilledPhone", telephone);
                 doGet(request, response);
             }
+
+            if (client != null) {
+                String hashedPassword = PasswordUtil.hashPassword(password);
+
+                if (hashedPassword.equals(client.getPassword())) {
+                    request.getSession().setAttribute("userClient", client);
+                    response.sendRedirect("client-dashboard");
+                } else {
+                    request.getSession().setAttribute("erreur", "Identifiants invalides.");
+                    doGet(request, response);
+                }
+            }
         }
-        
+
         else if ("register".equals(action)) {
             String nom = request.getParameter("nom");
             String prenom = request.getParameter("prenom");
@@ -72,16 +86,21 @@ public class ClientPortalServlet extends HttpServlet {
             int deviseId = Integer.parseInt(request.getParameter("devise"));
             String password = request.getParameter("password");
             String sexe = request.getParameter("sexe");
-            
+
+            if (password.trim().length() < 6) {
+                request.getSession().setAttribute("erreur", "Veuillez entrer un mot de passe supérieur à 6 caractères");
+            }
+
             List<Pays> tousLesPays = metadataRepository.findAllPays();
             for (Pays p : tousLesPays) {
                 if (p.getIdPays() == paysId && "interdit".equals(p.getStatut())) {
-                    request.getSession().setAttribute("erreur", "Inscription refusée : Votre pays de résidence est temporairement suspendu de notre plateforme.");
+                    request.getSession().setAttribute("erreur",
+                            "Inscription refusée : Votre pays de résidence est temporairement suspendu de notre plateforme.");
                     response.sendRedirect("client-portal");
                     return;
                 }
             }
-            
+
             if (clientRepository.findByEmail(mail) != null) {
                 request.getSession().setAttribute("erreur", "Erreur : Un client avec cet e-mail existe déjà !");
                 response.sendRedirect("client-portal");
@@ -114,7 +133,7 @@ public class ClientPortalServlet extends HttpServlet {
             nouveauCompte.setSolde(0.00);
             nouveauCompte.setPlafondJournalier(5000.00);
             nouveauCompte.setPlafondTransaction(1000.00);
-            nouveauCompte.setDateOuverture(LocalDateTime.now()); 
+            nouveauCompte.setDateOuverture(LocalDateTime.now());
             nouveauCompte.setStatutCompte("actif");
 
             compteRepository.save(nouveauCompte);
