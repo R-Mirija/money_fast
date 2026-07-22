@@ -52,7 +52,7 @@ public class FraisRepositoryImpl implements FraisRepository {
   }
 
   @Override
-  public Frais findApplicable(int idDevise, double montant) {
+  public Frais findApplicable(int idDeviseSource, double montant) {
     String sql = "SELECT * FROM frais_envoi " +
         "WHERE devise_frais = ? AND montant_min <= ? AND montant_max >= ? AND active = 1 " +
         "AND (date_debut_validite IS NULL OR date_debut_validite <= NOW()) " +
@@ -62,7 +62,7 @@ public class FraisRepositoryImpl implements FraisRepository {
     try (Connection conn = DBConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-      ps.setInt(1, idDevise);
+      ps.setInt(1, idDeviseSource);
       ps.setDouble(2, montant);
       ps.setDouble(3, montant);
 
