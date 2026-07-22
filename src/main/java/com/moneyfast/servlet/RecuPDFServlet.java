@@ -23,7 +23,8 @@ public class RecuPDFServlet extends HttpServlet {
     private final ClientRepository clientRepository = new MySQLClientRepository();
     private final MetadataRepository metadataRepository = new MySQLMetadataRepository();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String codeStr = request.getParameter("code");
 
         if (codeStr == null || codeStr.trim().isEmpty()) {
@@ -33,7 +34,7 @@ public class RecuPDFServlet extends HttpServlet {
 
         try {
             int codeTransfert = Integer.parseInt(codeStr);
-            
+
             Transfert t = transfertRepository.findByCode(codeTransfert);
             if (t == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Transfert introuvable !");
@@ -42,10 +43,10 @@ public class RecuPDFServlet extends HttpServlet {
 
             Compte compteSource = compteRepository.findById(t.getIdCompteSource());
             Compte compteDest = compteRepository.findById(t.getIdCompteDestination());
-            
+
             Client expediteur = clientRepository.findById(compteSource.getIdClient());
             Client destinataire = clientRepository.findById(compteDest.getIdClient());
-            
+
             String deviseSource = metadataRepository.findLibelleDevise(t.getDeviseSource());
             String deviseDest = metadataRepository.findLibelleDevise(t.getDeviseDestination());
 
@@ -80,7 +81,8 @@ public class RecuPDFServlet extends HttpServlet {
 
             // Section Expéditeur
             document.add(new Paragraph("EXPÉDITEUR :", boldFont));
-            document.add(new Paragraph("Nom complet : " + expediteur.getNom().toUpperCase() + " " + expediteur.getPrenom(), normalFont));
+            document.add(new Paragraph(
+                    "Nom complet : " + expediteur.getNom().toUpperCase() + " " + expediteur.getPrenom(), normalFont));
             document.add(new Paragraph("Téléphone : " + expediteur.getNumeroTelephone(), normalFont));
             document.add(new Paragraph("Montant envoyé : " + t.getMontantEnvoye() + " " + deviseSource, boldFont));
             document.add(new Paragraph("Frais d'envoi appliqués : " + t.getFrais() + " " + deviseSource, normalFont));
@@ -88,13 +90,16 @@ public class RecuPDFServlet extends HttpServlet {
 
             // Section Bénéficiaire
             document.add(new Paragraph("BÉNÉFICIAIRE :", boldFont));
-            document.add(new Paragraph("Nom complet : " + destinataire.getNom().toUpperCase() + " " + destinataire.getPrenom(), normalFont));
+            document.add(new Paragraph(
+                    "Nom complet : " + destinataire.getNom().toUpperCase() + " " + destinataire.getPrenom(),
+                    normalFont));
             document.add(new Paragraph("Téléphone : " + destinataire.getNumeroTelephone(), normalFont));
             document.add(new Paragraph("Montant reçu : " + t.getMontantRecu() + " " + deviseDest, boldFont));
             document.add(new Paragraph("                          "));
 
             // Pied de page
-            Paragraph footer = new Paragraph("Merci d'avoir choisi MoneyFast pour vos transferts rapides.", subtitleFont);
+            Paragraph footer = new Paragraph("Merci d'avoir choisi MoneyFast pour vos transferts rapides.",
+                    subtitleFont);
             footer.setAlignment(Element.ALIGN_CENTER);
             footer.setSpacingBefore(40);
             document.add(footer);

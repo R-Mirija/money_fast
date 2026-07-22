@@ -2,7 +2,6 @@ package com.moneyfast.servlet;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,7 +16,6 @@ import com.moneyfast.model.Devise;
 import com.moneyfast.model.Pays;
 import com.moneyfast.repository.ClientRepository;
 import com.moneyfast.repository.CompteRepository;
-import com.moneyfast.repository.InMemoryClientRepository;
 import com.moneyfast.repository.MetadataRepository;
 import com.moneyfast.repository.MySQLClientRepository;
 import com.moneyfast.repository.MySQLCompteRepository;

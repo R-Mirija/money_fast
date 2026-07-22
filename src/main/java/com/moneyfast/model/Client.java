@@ -1,7 +1,6 @@
 package com.moneyfast.model;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 public class Client {
     
