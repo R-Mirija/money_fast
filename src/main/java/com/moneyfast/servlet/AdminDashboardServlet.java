@@ -15,6 +15,7 @@ import com.moneyfast.model.Pays;
 import com.moneyfast.model.Transfert;
 import com.moneyfast.model.TauxDeChange;
 import com.moneyfast.model.Devise;
+import com.moneyfast.model.Frais;
 import com.moneyfast.repository.*;
 import com.moneyfast.repository.repository_impl.AdminRepositoryImpl;
 import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
@@ -23,6 +24,7 @@ import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
 import com.moneyfast.repository.repository_impl.StatsRepositoryImpl;
 import com.moneyfast.repository.repository_impl.TauxRepositoryImpl;
 import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
+import com.moneyfast.repository.repository_impl.FraisRepositoryImpl;
 import com.moneyfast.util.PasswordUtil;
 
 @WebServlet("/admin-dashboard")
@@ -36,6 +38,7 @@ public class AdminDashboardServlet extends HttpServlet {
     private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
     private final StatsRepository statsRepository = new StatsRepositoryImpl();
     private final TauxRepository tauxRepository = new TauxRepositoryImpl();
+    private final FraisRepository fraisRepository = new FraisRepositoryImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Admin admin = (Admin) request.getSession().getAttribute("userAdmin");
@@ -48,12 +51,15 @@ public class AdminDashboardServlet extends HttpServlet {
         List<Pays> listePays = metadataRepository.findAllPays();
         List<TauxDeChange> listeTaux = tauxRepository.findAll();
         List<Devise> listeDevises = metadataRepository.findAllDevises();
+        List<Frais> listeFrais = fraisRepository.findAll();
+        
         double totalRecettes = statsRepository.getTotalRecettes();
 
         request.setAttribute("listeClients", listeClients);
         request.setAttribute("listePays", listePays);
         request.setAttribute("listeTaux", listeTaux);
         request.setAttribute("listeDevises", listeDevises);
+        request.setAttribute("listeFrais", listeFrais);
         request.setAttribute("totalRecettes", totalRecettes);
 
         request.getRequestDispatcher("/WEB-INF/views/admin-dashboard.jsp").forward(request, response);
@@ -68,6 +74,7 @@ public class AdminDashboardServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
+        // GESTION DES PAYS
         if ("togglePays".equals(action)) {
             int idPays = Integer.parseInt(request.getParameter("idPays"));
             String statutActuel = request.getParameter("statut");
@@ -78,6 +85,7 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
         
+        // SUPPRESSION CLIENTS
         else if ("deleteClient".equals(action)) {
             Long idClient = Long.parseLong(request.getParameter("idClient"));
             Client client = clientRepository.findById(idClient);
@@ -108,6 +116,7 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
         
+        // AJOUTER UN ADMIN
         else if ("addAdmin".equals(action)) {
             String username = request.getParameter("username");
             String email = request.getParameter("email");
@@ -129,6 +138,7 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
 
+        // CRÉER UN NOUVEAU TAUX
         else if ("addTaux".equals(action)) {
             try {
                 int deviseSource = Integer.parseInt(request.getParameter("deviseSource"));
@@ -152,12 +162,13 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
 
+        // MODIFIER UN TAUX
         else if ("updateTaux".equals(action)) {
             try {
                 int idTaux = Integer.parseInt(request.getParameter("idTaux"));
                 float nouveauTaux = Float.parseFloat(request.getParameter("nouveauTaux"));
                 
-                tauxRepository.updateTaux(idTaux, nouveauTaux, true); // Reste actif après modification
+                tauxRepository.updateTaux(idTaux, nouveauTaux, true);
                 request.getSession().setAttribute("succes", "La valeur du taux de change a été mise à jour.");
             } catch (Exception e) {
                 request.getSession().setAttribute("erreur", "Erreur lors de la mise à jour du taux !");
@@ -165,13 +176,66 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
 
+        // SUPPRIMER UN TAUX
         else if ("deleteTaux".equals(action)) {
             try {
                 int idTaux = Integer.parseInt(request.getParameter("idTaux"));
                 tauxRepository.delete(idTaux);
-                request.getSession().setAttribute("succes", "Le taux de change a été supprimé définitivement de la base.");
+                request.getSession().setAttribute("succes", "Le taux de change a été supprimé définitivement.");
             } catch (Exception e) {
                 request.getSession().setAttribute("erreur", "Erreur de suppression du taux !");
+            }
+            response.sendRedirect("admin-dashboard");
+        }
+
+        // FRAIS 
+        else if ("addFrais".equals(action)) {
+            try {
+                int deviseFrais = Integer.parseInt(request.getParameter("deviseFrais"));
+                double montantMin = Double.parseDouble(request.getParameter("montantMin"));
+                double montantMax = Double.parseDouble(request.getParameter("montantMax"));
+                int typeFrais = Integer.parseInt(request.getParameter("typeFrais"));
+                double valeurFrais = Double.parseDouble(request.getParameter("valeurFrais"));
+
+                Frais f = new Frais();
+                f.setCodeFrais((int) (Math.random() * 90000) + 10000);
+                f.setDeviseFrais(deviseFrais);
+                f.setMontantMin(montantMin);
+                f.setMontantMax(montantMax);
+                f.setTypeFrais(typeFrais);
+                f.setValeurFrais(valeurFrais);
+                f.setActive(true);
+
+                fraisRepository.save(f);
+                request.getSession().setAttribute("succes", "Nouveau frais d'envoi enregistré");
+            } catch (Exception e) {
+                request.getSession().setAttribute("erreur", "Frais invalide !");
+            }
+            response.sendRedirect("admin-dashboard");
+        }
+        else if ("updateFrais".equals(action)) {
+            try {
+                int idFrais = Integer.parseInt(request.getParameter("idFrais"));
+                double nouvelleValeur = Double.parseDouble(request.getParameter("nouvelleValeur").replace(',', '.'));
+
+                Frais f = fraisRepository.findById(idFrais);
+                if (f != null) {
+                    f.setValeurFrais(nouvelleValeur);
+                    fraisRepository.update(f);
+                    request.getSession().setAttribute("succes", "Frais mis à jour.");
+                }
+            } catch (Exception e) {
+                request.getSession().setAttribute("erreur", "Erreur lors de la mise à jour des frais !");
+            }
+            response.sendRedirect("admin-dashboard");
+        }
+        else if ("deleteFrais".equals(action)) {
+            try {
+                int idFrais = Integer.parseInt(request.getParameter("idFrais"));
+                fraisRepository.delete(idFrais);
+                request.getSession().setAttribute("succes", "Frais d'envoi supprimé.");
+            } catch (Exception e) {
+                request.getSession().setAttribute("erreur", "Erreur lors de la suppression des frais !");
             }
             response.sendRedirect("admin-dashboard");
         }

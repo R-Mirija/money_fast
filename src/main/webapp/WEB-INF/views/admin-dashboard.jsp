@@ -7,18 +7,29 @@
 <%@ page import="com.moneyfast.model.Pays" %>
 <%@ page import="com.moneyfast.model.Devise" %>
 <%@ page import="com.moneyfast.model.TauxDeChange" %>
+<%@ page import="com.moneyfast.model.Frais" %>
 <%@ page import="com.moneyfast.repository.CompteRepository" %>
 <%@ page import="com.moneyfast.repository.MetadataRepository" %>
-
 <%@ page import="com.moneyfast.repository.repository_impl.CompteRepositoryImpl" %>
 <%@ page import="com.moneyfast.repository.repository_impl.MetadataRepositoryImpl" %>
-
 <%
     Admin admin = (Admin) session.getAttribute("userAdmin");
+    
+    @SuppressWarnings("unchecked")
     List<Client> listeClients = (List<Client>) request.getAttribute("listeClients");
+    
+    @SuppressWarnings("unchecked")
     List<Pays> listePays = (List<Pays>) request.getAttribute("listePays");
+    
+    @SuppressWarnings("unchecked")
     List<TauxDeChange> listeTaux = (List<TauxDeChange>) request.getAttribute("listeTaux");
+    
+    @SuppressWarnings("unchecked")
     List<Devise> listeDevises = (List<Devise>) request.getAttribute("listeDevises");
+    
+    @SuppressWarnings("unchecked")
+    List<Frais> listeFrais = (List<Frais>) request.getAttribute("listeFrais");
+    
     Double totalRecettes = (Double) request.getAttribute("totalRecettes");
     if (totalRecettes == null) totalRecettes = 0.00;
     
@@ -125,9 +136,10 @@
                 color: #ffffff;
             }
             
+            /* MODIFICATION : Changement des marges car le right-panel a été supprimé */
             .main-content {
                 margin-left: 110px;
-                margin-right: 340px;
+                margin-right: 20px; /* Aligné proprement sur la largeur de l'écran */
                 padding: 30px 20px;
                 min-height: 100vh;
             }
@@ -187,19 +199,6 @@
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             }
             
-            .right-panel {
-                width: 320px;
-                background-color: #ffffff;
-                border-radius: 32px;
-                position: fixed;
-                right: 20px;
-                top: 20px;
-                height: calc(100vh - 40px);
-                padding: 35px 25px;
-                box-shadow: -2px 0 20px rgba(0,0,0,0.02);
-                overflow-y: auto;
-            }
-            
             .avatar-circle {
                 width: 40px;
                 height: 40px;
@@ -237,19 +236,20 @@
             .toast-pinterest {
                 background-color: #e60023; color: white; border-radius: 20px; padding: 14px 24px;
                 display: flex; align-items: center; justify-content: space-between; font-weight: 600;
-                position: fixed; top: 24px; right: 350px; z-index: 1050; min-width: 320px;
+                position: fixed; top: 24px; right: 40px; z-index: 1050; min-width: 320px;
             }
             .toast-success-pinterest {
                 background-color: #00875a; color: white; border-radius: 20px; padding: 14px 24px;
                 display: flex; align-items: center; justify-content: space-between; font-weight: 600;
-                position: fixed; top: 24px; right: 350px; z-index: 1050; min-width: 320px;
+                position: fixed; top: 24px; right: 40px; z-index: 1050; min-width: 320px;
             }
             .btn-close-toast { background: none; border: none; color: white; font-size: 22px; cursor: pointer; }
             
+            /* MODIFICATION : Positionnement du FAB en bas à droite classique */
             .fab-admin {
                 position: fixed;
                 bottom: 30px;
-                right: 360px;
+                right: 30px;
                 width: 56px;
                 height: 56px;
                 background-color: #e60023;
@@ -273,7 +273,7 @@
             .admin-popup-panel {
                 position: fixed;
                 bottom: 100px;
-                right: 360px;
+                right: 30px;
                 width: 320px;
                 background-color: #ffffff;
                 border-radius: 24px;
@@ -342,12 +342,14 @@
 
         <div class="main-content">
 
+            <!-- LIGNE 1 : CÔTE À CÔTE (Votre solde, Ajouter un Taux, Ajouter un Frais, Clients) -->
             <div class="row g-4 mb-5">
-                <div class="col-lg-6">
+                <!-- 1. Votre solde (Recettes de la plateforme) -->
+                <div class="col-lg-3 col-md-6">
                     <div class="overview-card d-flex flex-column justify-content-between" style="min-height: 250px;">
                         <div>
                             <h5 class="fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 1px; opacity: 0.8;">Votre solde</h5>
-                            <h2 class="fw-extrabold mb-0" style="font-size: 38px;"><%= totalRecettes %> EUR</h2>
+                            <h2 class="fw-extrabold mb-0" style="font-size: 28px;"><%= totalRecettes %> EUR</h2>
                         </div>
                         <div style="font-size: 11px; opacity: 0.7; text-transform: uppercase; border-top: 1px solid rgba(255,255,255,0.15);" class="pt-2">
                             Money Fast
@@ -355,18 +357,19 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <!-- 2. Ajouter un Taux (Format Pinterest / Convertisseur comme sur la photo) -->
+                <div class="col-lg-3 col-md-6">
                     <div class="sub-card d-flex flex-column justify-content-between" style="min-height: 250px;">
                         <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Ajouter un Taux</h6>
                         <form action="admin-dashboard" method="post">
                             <input type="hidden" name="action" value="addTaux">
 
                             <div class="row g-2 mb-2">
-                                <div class="col-3">
+                                <div class="col-4">
                                     <input type="text" class="form-control form-control-dashboard text-center fw-bold bg-light" value="1" readonly>
                                 </div>
-                                <div class="col-9">
-                                    <select name="deviseSource" class="form-select form-control-dashboard" required>
+                                <div class="col-8">
+                                    <select name="deviseSource" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 10px;">
                                         <% if (listeDevises != null) {
                                         for (Devise d : listeDevises) { %>
                                         <option value="<%= d.getIdDevise() %>"><%= d.getLibelle() %></option>
@@ -376,11 +379,11 @@
                             </div>
 
                             <div class="row g-2 mb-3">
-                                <div class="col-3">
-                                    <input type="text" name="valeurTaux" class="form-control form-control-dashboard text-center fw-bold" placeholder="Taux" required>
+                                <div class="col-4">
+                                    <input type="text" name="valeurTaux" class="form-control form-control-dashboard text-center fw-bold" placeholder="Taux" required style="padding: 8px 6px;">
                                 </div>
-                                <div class="col-9">
-                                    <select name="deviseDestination" class="form-select form-control-dashboard" required>
+                                <div class="col-8">
+                                    <select name="deviseDestination" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 10px;">
                                         <% if (listeDevises != null) {
                                         for (Devise d : listeDevises) { %>
                                         <option value="<%= d.getIdDevise() %>"><%= d.getLibelle() %></option>
@@ -393,10 +396,99 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- 3. Frais -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="sub-card d-flex flex-column justify-content-between" style="min-height: 250px;">
+                        <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Ajouter un Frais</h6>
+                        <form action="admin-dashboard" method="post">
+                            <input type="hidden" name="action" value="addFrais">
+                            
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <input type="text" name="montantMin" class="form-control form-control-dashboard" placeholder="Min" required style="font-size: 12px; padding: 8px 10px;">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" name="montantMax" class="form-control form-control-dashboard" placeholder="Max" required style="font-size: 12px; padding: 8px 10px;">
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <select name="typeFrais" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 6px;">
+                                        <option value="1">%</option>
+                                        <option value="2">Montant</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" name="valeurFrais" class="form-control form-control-dashboard" placeholder="Valeur" required style="font-size: 12px; padding: 8px 10px;">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <select name="deviseFrais" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 10px;">
+                                    <% if (listeDevises != null) {
+                                    for (Devise d : listeDevises) { %>
+                                    <option value="<%= d.getIdDevise() %>"><%= d.getLibelle() %></option>
+                                    <% } } %>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn-admin-submit">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 4. Clients Actifs (La liste glissante a été déplacée ICI de façon compacte) -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="sub-card d-flex flex-column justify-content-between" style="min-height: 250px; background-color: #ffffff;">
+                        <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Clients Actifs</h6>
+                        <div style="max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                            <% if (listeClients != null && !listeClients.isEmpty()) {
+                                for (Client c : listeClients) {
+                                    Compte co = compteRepository.findByTelephone(c.getNumeroTelephone());
+                                    double solde = co != null ? co.getSolde() : 0.00;
+                                    String initiales = "" + c.getNom().charAt(0) + c.getPrenom().charAt(0);
+                                %>
+                                <div class="swipe-container mb-2" id="swipe-container-<%= c.getIdClient() %>">
+                                    <div class="swipe-behind">
+                                        <form action="admin-dashboard" method="post" id="delete-form-<%= c.getIdClient() %>" onsubmit="return confirmDelete(event, '<%= c.getIdClient() %>')">
+                                            <input type="hidden" name="action" value="deleteClient">
+                                            <input type="hidden" name="idClient" value="<%= c.getIdClient() %>">
+                                            <button type="submit" class="border-0 bg-transparent text-white w-100 h-100 d-flex align-items-center justify-content-center" style="width: 80px;">
+                                                <i class="fi fi-rr-trash" style="font-size: 14px;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div class="swipe-front d-flex align-items-center justify-content-between p-2"
+                                         id="swipe-front-<%= c.getIdClient() %>"
+                                         onmousedown="startSwipe(event, '<%= c.getIdClient() %>')"
+                                         ontouchstart="startSwipe(event, '<%= c.getIdClient() %>')">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 11px;"><%= initiales.toUpperCase() %></div>
+                                            <div>
+                                                <div class="fw-bold" style="font-size: 11px; line-height: 1.1;"><%= c.getNom().toUpperCase() %></div>
+                                                <div class="text-muted" style="font-size: 9px;"><%= c.getNumeroTelephone() %></div>
+                                            </div>
+                                        </div>
+                                        <div class="text-end pe-1">
+                                            <div class="fw-bold text-success" style="font-size: 11px;"><%= solde %> MGA</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } } else { %>
+                                <div class="text-muted text-center py-3" style="font-size: 11px;">Aucun client</div>
+                            <% } %>
+                        </div>
+                        <div class="text-center text-muted" style="font-size: 9px; opacity: 0.7; margin-top: 5px;">Glisser ➔ pour supprimer</div>
+                    </div>
+                </div>
             </div>
 
             <div class="row g-4 mt-2">
-                <div class="col-lg-6">
+                <!-- 1. Restrictions de Pays -->
+                <div class="col-lg-4 col-md-6">
                     <div class="bottom-card" style="min-height: 380px;">
                         <div class="badge-top-icon">
                             <i class="fi fi-rr-globe"></i>
@@ -404,8 +496,7 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                             <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Restrictions de Pays</h6>
-
-                            <input type="text" id="countrySearch" class="form-control form-control-dashboard py-1" style="max-width: 180px; font-size: 12px;" placeholder="Chercher un pays..." onkeyup="filterCountries()">
+                            <input type="text" id="countrySearch" class="form-control form-control-dashboard py-1" style="max-width: 140px; font-size: 11px;" placeholder="Chercher..." onkeyup="filterCountries()">
                         </div>
 
                         <div style="max-height: 250px; overflow-y: auto;">
@@ -440,7 +531,8 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6">
+                    <!-- 2. Taux de Change Actifs -->
+                    <div class="col-lg-4 / col-md-6">
                         <div class="bottom-card" style="min-height: 380px;">
                             <div class="badge-top-icon">
                                 <i class="fi fi-rr-chart-histogram"></i>
@@ -462,7 +554,6 @@
                                                 String labelDest = metadataRepository.findLibelleDevise(t.getDeviseDestination());
                                             %>
                                             <tr>
-                                                <!-- Colonne 1 : Devise to Devise (Ex: USD to MGA) -->
                                                 <td class="fw-bold"><%= labelSrc %> to <%= labelDest %></td>
 
                                                 <td>
@@ -486,7 +577,6 @@
                                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer définitivement">
                                                             <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
                                                         </button>
-
                                                     </form>
                                                 </td>
                                             </tr>
@@ -496,191 +586,199 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                </div>
-
-                <div class="right-panel">
-                    <h5 class="fw-bold mb-4">Clients</h5>
-                    <div style="max-height: calc(100vh - 120px); overflow-y: auto; padding-right: 5px;">
-                        <% if (listeClients != null && !listeClients.isEmpty()) {
-                            for (Client c : listeClients) {
-                                Compte co = compteRepository.findByTelephone(c.getNumeroTelephone());
-                                double solde = co != null ? co.getSolde() : 0.00;
-                                String initiales = "" + c.getNom().charAt(0) + c.getPrenom().charAt(0);
-                            %>
-
-                            <div class="swipe-container mb-3" id="swipe-container-<%= c.getIdClient() %>">
-
-                                <div class="swipe-behind">
-                                    <form action="admin-dashboard" method="post" id="delete-form-<%= c.getIdClient() %>" onsubmit="return confirmDelete(event, '<%= c.getIdClient() %>')">
-                                        <input type="hidden" name="action" value="deleteClient">
-                                        <input type="hidden" name="idClient" value="<%= c.getIdClient() %>">
-                                        <button type="submit" class="border-0 bg-transparent text-white w-100 h-100 d-flex align-items-center justify-content-center" style="width: 80px;">
-                                            <i class="fi fi-rr-trash" style="font-size: 16px;"></i>
-                                        </button>
-                                    </form>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="bottom-card" style="min-height: 380px;">
+                                <div class="badge-top-icon">
+                                    <i class="fi fi-rr-dollar"></i>
                                 </div>
-
-                                <div class="swipe-front d-flex align-items-center justify-content-between p-2"
-                                id="swipe-front-<%= c.getIdClient() %>"
-                                onmousedown="startSwipe(event, '<%= c.getIdClient() %>')"
-                                ontouchstart="startSwipe(event, '<%= c.getIdClient() %>')">
-
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-circle"><%= initiales.toUpperCase() %></div>
-                                    <div>
-                                        <div class="fw-bold" style="font-size: 13px;"><%= c.getNom().toUpperCase() %> <%= c.getPrenom() %></div>
-                                        <div class="text-muted" style="font-size: 11px;"><%= c.getNumeroTelephone() %></div>
+                                <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Frais d'envoi</h6>
+                                <div style="max-height: 250px; overflow-y: auto;">
+                                    <table class="table align-middle" style="font-size: 11px; margin-bottom: 0;">
+                                        <thead>
+                                            <tr>
+                                                <th>Tranche</th>
+                                                <th>Type</th>
+                                                <th>Valeur (Éditer)</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (listeFrais != null) {
+                                                for (Frais f : listeFrais) {
+                                                    String labelDevise = metadataRepository.findLibelleDevise(f.getDeviseFrais());
+                                                %>
+                                                <tr>
+													<td>De <strong><%= df.format(f.getMontantMin()) %></strong> à <strong><%= df.format(f.getMontantMax()) %> <%= labelDevise %></strong></td>                                                    <td>
+                                                        <span class="badge bg-light text-dark border" style="font-size: 10px;">
+                                                            <%= f.getTypeFrais() == 1 ? "%" : "Montant" %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <form action="admin-dashboard" method="post" class="d-flex align-items-center">
+                                                            <input type="hidden" name="action" value="updateFrais">
+                                                            <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
+                                                            <div class="input-group input-group-sm" style="max-width: 110px;">
+                                                                <input type="text" name="nouvelleValeur" class="form-control text-center fw-bold" value="<%= df.format(f.getValeurFrais()) %>" required style="font-size: 11px; border-radius: 8px 0 0 8px;">                                                                <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour" style="padding: 9px 12px; border-radius: 0 8px 8px 0;">
+                                                                    <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce barème de frais ?');" class="d-inline">
+                                                            <input type="hidden" name="action" value="deleteFrais">
+                                                            <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer">
+                                                                <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <% } } %>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                                <div class="text-end pe-2">
-                                    <div class="fw-bold text-success" style="font-size: 13px;"><%= solde %> MGA</div>
-                                    <div class="text-muted" style="font-size: 9px; opacity: 0.7;">Glisser ➔</div>
-                                </div>
                             </div>
-
                         </div>
-                        <% } } else { %>
-                        <div class="text-muted text-center py-4" style="font-size: 13px;">Aucun client</div>
-                        <% } %>
+
                     </div>
-                </div>
 
-                <button class="fab-admin" onclick="toggleAdminPopup()" title="Équipe d'Administration">
-                    <i class="fi fi-rr-users-alt" style="line-height: 1; display: block; margin-top: 4px;"></i>
-                </button>
+                    <button class="fab-admin" onclick="toggleAdminPopup()" title="Équipe d'Administration">
+                        <i class="fi fi-rr-users-alt" style="line-height: 1; display: block; margin-top: 4px;"></i>
+                    </button>
 
-                <div id="adminPopup" class="admin-popup-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Nouveau Admin</h6>
-                        <button type="button" class="btn-close-popup" onclick="toggleAdminPopup()">&times;</button>
+                    <div id="adminPopup" class="admin-popup-panel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Nouveau Admin</h6>
+                            <button type="button" class="btn-close-popup" onclick="toggleAdminPopup()">&times;</button>
+                        </div>
+                        <form action="admin-dashboard" method="post">
+                            <input type="hidden" name="action" value="addAdmin">
+                            <div class="mb-2">
+                                <input type="text" name="username" class="form-control form-control-dashboard" placeholder="Nom d'utilisateur" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="email" name="email" class="form-control form-control-dashboard" placeholder="Adresse Email" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" name="password" class="form-control form-control-dashboard" placeholder="Mot de passe" required>
+                            </div>
+                            <button type="submit" class="btn-admin-submit py-2">Enregistrer</button>
+                        </form>
                     </div>
-                    <form action="admin-dashboard" method="post">
-                        <input type="hidden" name="action" value="addAdmin">
-                        <div class="mb-2">
-                            <input type="text" name="username" class="form-control form-control-dashboard" placeholder="Nom d'utilisateur" required>
-                        </div>
-                        <div class="mb-2">
-                            <input type="email" name="email" class="form-control form-control-dashboard" placeholder="Adresse Email" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" name="password" class="form-control form-control-dashboard" placeholder="Mot de passe" required>
-                        </div>
-                        <button type="submit" class="btn-admin-submit py-2">Enregistrer</button>
-                    </form>
-                </div>
 
-                <script>
-                    function toggleAdminPopup() {
-                        const popup = document.getElementById('adminPopup');
-                        if (popup.classList.contains('show')) {
-                            popup.classList.remove('show');
-                            setTimeout(() => { popup.style.display = 'none'; }, 300);
-                        } else {
-                            popup.style.display = 'block';
-                            setTimeout(() => { popup.classList.add('show'); }, 10);
+                    <script>
+                        function toggleAdminPopup() {
+                            const popup = document.getElementById('adminPopup');
+                            if (popup.classList.contains('show')) {
+                                popup.classList.remove('show');
+                                setTimeout(() => { popup.style.display = 'none'; }, 300);
+                            } else {
+                                popup.style.display = 'block';
+                                setTimeout(() => { popup.classList.add('show'); }, 10);
+                            }
                         }
-                    }
-                    
-                    function filterCountries() {
-                        let input = document.getElementById("countrySearch");
-                        let filter = input.value.toLowerCase();
-                        let table = document.getElementById("countryTable");
-                        let tr = table.getElementsByTagName("tr");
                         
-                        for (let i = 0; i < tr.length; i++) {
-                            let td = tr[i].getElementsByTagName("td")[0];
-                            if (td) {
-                                let textValue = td.textContent || td.innerText;
-                                if (textValue.toLowerCase().indexOf(filter) > -1) {
-                                    tr[i].style.display = "";
-                                } else {
-                                    tr[i].style.display = "none";
+                        function filterCountries() {
+                            let input = document.getElementById("countrySearch");
+                            let filter = input.value.toLowerCase();
+                            let table = document.getElementById("countryTable");
+                            let tr = table.getElementsByTagName("tr");
+                            
+                            for (let i = 0; i < tr.length; i++) {
+                                let td = tr[i].getElementsByTagName("td")[0];
+                                if (td) {
+                                    let textValue = td.textContent || td.innerText;
+                                    if (textValue.toLowerCase().indexOf(filter) > -1) {
+                                        tr[i].style.display = "";
+                                    } else {
+                                        tr[i].style.display = "none";
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    function closeToast() {
-                        const toast = document.getElementById('toast-error');
-                        if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
-                    }
-                    function closeSuccessToast() {
-                        const toast = document.getElementById('toast-success');
-                        if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
-                    }
-                    window.addEventListener('DOMContentLoaded', () => {
-                        const err = document.getElementById('toast-error');
-                        if (err) { setTimeout(() => { closeToast(); }, 5000); }
-                        const succ = document.getElementById('toast-success');
-                        if (succ) { setTimeout(() => { closeSuccessToast(); }, 5000); }
-                    });
-                    //swip
-                    let startX = 0;
-                    let currentX = 0;
-                    let activeClientId = null;
-                    let activeFrontElement = null;
-                    let isDragging = false;
-                    
-                    function startSwipe(e, clientId) {
-                        isDragging = true;
-                        activeClientId = clientId;
-                        activeFrontElement = document.getElementById('swipe-front-' + clientId);
                         
-                        startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-                        activeFrontElement.style.transition = 'none';
+                        function closeToast() {
+                            const toast = document.getElementById('toast-error');
+                            if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
+                        }
+                        function closeSuccessToast() {
+                            const toast = document.getElementById('toast-success');
+                            if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
+                        }
+                        window.addEventListener('DOMContentLoaded', () => {
+                            const err = document.getElementById('toast-error');
+                            if (err) { setTimeout(() => { closeToast(); }, 5000); }
+                            const succ = document.getElementById('toast-success');
+                            if (succ) { setTimeout(() => { closeSuccessToast(); }, 5000); }
+                        });
                         
-                        document.addEventListener('mousemove', moveSwipe);
-                        document.addEventListener('mouseup', endSwipe);
-                        document.addEventListener('touchmove', moveSwipe);
-                        document.addEventListener('touchend', endSwipe);
-                    }
-                    
-                    function moveSwipe(e) {
-                        if (!isDragging || !activeFrontElement) return;
-                        currentX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-                        let diffX = currentX - startX;
+                        // Swipe-to-delete JS
+                        let startX = 0;
+                        let currentX = 0;
+                        let activeClientId = null;
+                        let activeFrontElement = null;
+                        let isDragging = false;
                         
-                        if (diffX < 0) diffX = 0;
-                        if (diffX > 80) diffX = 80;
-                        
-                        activeFrontElement.style.transform = "translateX(" + diffX + "px)";
-                    }
-                    
-                    function endSwipe() {
-                        if (!isDragging || !activeFrontElement) return;
-                        isDragging = false;
-                        
-                        activeFrontElement.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                        
-                        let diffX = currentX - startX;
-                        
-                        if (diffX > 40) {
-                            activeFrontElement.style.transform = 'translateX(80px)';
-                        } else {
-                            activeFrontElement.style.transform = 'translateX(0)';
+                        function startSwipe(e, clientId) {
+                            isDragging = true;
+                            activeClientId = clientId;
+                            activeFrontElement = document.getElementById('swipe-front-' + clientId);
+                            
+                            startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+                            activeFrontElement.style.transition = 'none';
+                            
+                            document.addEventListener('mousemove', moveSwipe);
+                            document.addEventListener('mouseup', endSwipe);
+                            document.addEventListener('touchmove', moveSwipe);
+                            document.addEventListener('touchend', endSwipe);
                         }
                         
-                        document.removeEventListener('mousemove', moveSwipe);
-                        document.removeEventListener('mouseup', endSwipe);
-                        document.removeEventListener('touchmove', moveSwipe);
-                        document.removeEventListener('touchend', endSwipe);
-                    }
-                    
-                    function confirmDelete(event, clientId) {
-                        event.preventDefault();
+                        function moveSwipe(e) {
+                            if (!isDragging || !activeFrontElement) return;
+                            currentX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+                            let diffX = currentX - startX;
+                            
+                            if (diffX < 0) diffX = 0;
+                            if (diffX > 80) diffX = 80;
+                            
+                            activeFrontElement.style.transform = "translateX(" + diffX + "px)";
+                        }
                         
-                        if (confirm("Voulez-vous supprimer définitivement ce client et son compte associé ?")) {
-                            event.target.submit();
-                        } else {
-                            const front = document.getElementById('swipe-front-' + clientId);
-                            if (front) {
-                                front.style.transform = 'translateX(0)';
+                        function endSwipe() {
+                            if (!isDragging || !activeFrontElement) return;
+                            isDragging = false;
+                            
+                            activeFrontElement.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                            
+                            let diffX = currentX - startX;
+                            
+                            if (diffX > 40) {
+                                activeFrontElement.style.transform = 'translateX(80px)';
+                            } else {
+                                activeFrontElement.style.transform = 'translateX(0)';
+                            }
+                            
+                            document.removeEventListener('mousemove', moveSwipe);
+                            document.removeEventListener('mouseup', endSwipe);
+                            document.removeEventListener('touchmove', moveSwipe);
+                            document.removeEventListener('touchend', endSwipe);
+                        }
+                        
+                        function confirmDelete(event, clientId) {
+                            event.preventDefault();
+                            
+                            if (confirm("Voulez-vous supprimer définitivement ce client et son compte associé ?")) {
+                                event.target.submit();
+                            } else {
+                                const front = document.getElementById('swipe-front-' + clientId);
+                                if (front) {
+                                    front.style.transform = 'translateX(0)';
+                                }
                             }
                         }
-                    }
-                </script>
+                    </script>
 
-            </body>
-        </html>
+                </body>
+            </html>
