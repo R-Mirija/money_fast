@@ -115,7 +115,23 @@ public class AdminDashboardServlet extends HttpServlet {
             }
             response.sendRedirect("admin-dashboard");
         }
-        
+        //blocage & deblocage
+        else if ("toggleCompteStatut".equals(action)) {
+            try {
+                int numeroCompte = Integer.parseInt(request.getParameter("numeroCompte"));
+                String statutActuel = request.getParameter("statut");
+                String telephone = request.getParameter("telephone");
+
+                String nouveauStatut = "ACTIF".equalsIgnoreCase(statutActuel) ? "suspendu" : "actif";
+                compteRepository.updateStatut(numeroCompte, nouveauStatut);
+                String actionMessage = "actif".equalsIgnoreCase(nouveauStatut) ? "débloqué" : "bloqué";
+                request.getSession().setAttribute("succes", "Le compte de " + telephone + " a été " + actionMessage + " avec succès.");
+                
+            } catch (Exception e) {
+                request.getSession().setAttribute("erreur", "Erreur lors de la mise à jour du statut du compte.");
+            }
+            response.sendRedirect("admin-dashboard");
+        }
         // AJOUTER UN ADMIN
         else if ("addAdmin".equals(action)) {
             String username = request.getParameter("username");

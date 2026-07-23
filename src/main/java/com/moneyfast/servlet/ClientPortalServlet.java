@@ -68,6 +68,13 @@ public class ClientPortalServlet extends HttpServlet {
                 String hashedPassword = PasswordUtil.hashPassword(password);
 
                 if (hashedPassword.equals(client.getPassword())) {
+                	Compte compteAsso = compteRepository.findByTelephone(telephone);
+                    if (compteAsso != null && !"actif".equalsIgnoreCase(compteAsso.getStatutCompte())) {
+                        request.getSession().setAttribute("erreur", "Connexion refusée : Votre compte est temporairement bloqué ou suspendu.");
+                        doGet(request, response);
+                        return;
+                    }
+
                     request.getSession().setAttribute("userClient", client);
                     response.sendRedirect("client-dashboard");
                 } else {
@@ -76,7 +83,6 @@ public class ClientPortalServlet extends HttpServlet {
                 }
             }
         }
-
         else if ("register".equals(action)) {
             String nom = request.getParameter("nom");
             String prenom = request.getParameter("prenom");

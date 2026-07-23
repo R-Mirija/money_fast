@@ -473,7 +473,29 @@
                                             </div>
                                         </div>
                                         <div class="text-end pe-1">
-                                            <div class="fw-bold text-success" style="font-size: 11px;"><%= solde %> MGA</div>
+                                            <!-- <div class="fw-bold text-success" style="font-size: 11px;"><%= solde %> MGA</div>--!>
+
+											<% if (co != null) { 
+											    // Comparaison directe car statutCompte est déjà un String
+											    boolean isActif = "actif".equalsIgnoreCase(co.getStatutCompte());
+											%>
+											    <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
+											        <!-- Badge de statut -->
+											        <span class="badge <%= isActif ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 9px; padding: 4px 8px; border-radius: 6px;">
+											            <%= isActif ? "Actif" : "Bloqué" %>
+											        </span>
+											        <form action="admin-dashboard" method="post" class="d-inline">
+											            <input type="hidden" name="action" value="toggleCompteStatut">
+											            <input type="hidden" name="numeroCompte" value="<%= co.getNumeroCompte() %>">
+											            <input type="hidden" name="statut" value="<%= co.getStatutCompte() %>">
+											            <input type="hidden" name="telephone" value="<%= c.getNumeroTelephone() %>">
+											            <button type="submit" class="border-0 bg-transparent p-0 d-inline-flex align-items-center" title="<%= isActif ? "Bloquer le compte" : "Débloquer le compte" %>" style="transition: transform 0.2s ease;">
+											                <i class="fi <%= isActif ? "fi-rr-unlock text-success" : "fi-rr-lock text-danger" %>" style="font-size: 12px; line-height: 1;"></i>
+											            </button>
+											        </form>
+											    </div>
+											<% } %>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -481,7 +503,7 @@
                                 <div class="text-muted text-center py-3" style="font-size: 11px;">Aucun client</div>
                             <% } %>
                         </div>
-                        <div class="text-center text-muted" style="font-size: 9px; opacity: 0.7; margin-top: 5px;">Glisser ➔ pour supprimer</div>
+                        <div class="text-center text-muted" style="font-size: 9px; opacity: 0.7; margin-top: 5px;">Supprimer ></div>
                     </div>
                 </div>
             </div>
