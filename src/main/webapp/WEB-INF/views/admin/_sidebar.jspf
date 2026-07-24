@@ -1,14 +1,40 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 
 <div class="sidebar">
-  <a href="#" class="sidebar-logo">&nbsp;</a>
-  <div class="sidebar-menu">
-    <a href="#" class="sidebar-icon active" title="Dashboard">
-      <i class="fi fi-rr-home"></i>
-    </a>
-    <a href="admin-portal?action=logout" class="sidebar-icon" title="Déconnexion">
-      <i class="fi fi-rr-exit"></i>
-    </a>
+
+  <div>
+
+    <div class="sidebar-top">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar">
+          <%= admin != null && admin.getUsername() != null && !admin.getUsername().isEmpty()
+          ? admin.getUsername().substring(0, 1).toUpperCase()
+          : "A" %>
+        </div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">
+            <%= admin != null && admin.getUsername() != null && !admin.getUsername().isEmpty()
+            ? admin.getUsername()
+            : "Admin" %>
+          </div>
+          <div class="sidebar-user-role">Administrateur</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-menu">
+      <a href="#" class="sidebar-icon active" title="Dashboard">
+        <i class="fi fi-rr-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+
   </div>
-  <div style="font-size: 11px; color: #555;">&nbsp;</div>
+
+
+
+  <a href="admin-portal?action=logout" class="btn btn-danger" title="Déconnexion">
+    <i class="fi fi-rr-exit"></i>
+    <span>Déconnexion</span>
+  </a>
 </div>

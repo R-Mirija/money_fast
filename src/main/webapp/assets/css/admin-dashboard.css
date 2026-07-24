@@ -39,45 +39,90 @@ body {
   cursor: grabbing;
 }
 
+/* sidebar */
+
 .sidebar {
-  width: 80px;
-  background-color: #111111;
-  border-radius: 28px;
-  margin: 20px 0 20px 20px;
+  width: 260px;
+  background: linear-gradient(180deg, #111111 0%, #1c1c1c 100%);
+  border-radius: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: space-between;
-  padding: 30px 0;
-  height: calc(100vh - 40px);
+  padding: 24px 18px;
+  height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
+  z-index: 3;
 }
 
-.sidebar-logo {
-  font-size: 24px;
+.sidebar-top {
+  width: 100%;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-user-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e60023 0%, #ff4d61 100%);
   color: #ffffff;
-  font-weight: 800;
-  text-decoration: none;
-  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  color: #bfbfbf;
+  font-size: 12px;
 }
 
 .sidebar-menu {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .sidebar-icon {
-  width: 44px;
+  width: 100%;
   height: 44px;
   border-radius: 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #888888;
-  font-size: 20px;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 12px;
+  color: #bdbdbd;
+  font-size: 15px;
   text-decoration: none;
   transition: all 0.2s ease;
 }
@@ -88,11 +133,32 @@ body {
   color: #ffffff;
 }
 
-/* MODIFICATION : Changement des marges car le right-panel a été supprimé */
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #e60023;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(230, 0, 35, 0.25);
+}
+
+.sidebar-logout:hover {
+  color: #ffffff;
+  background: #c8001c;
+}
+
+/* Main content */
+
 .main-content {
-  margin-left: 110px;
-  margin-right: 20px; /* Aligné proprement sur la largeur de l'écran */
-  padding: 30px 20px;
+  margin-left: 260px;
+  margin-right: 0;
+  padding: 30px 40px;
   min-height: 100vh;
 }
 
@@ -285,44 +351,44 @@ body {
 }
 
 .topbar-modern {
-    background-color: #ffffff;
-    border-radius: 20px;
-    padding: 16px 20px;
-    box-shadow: 0 1px 15px rgba(0,0,0,0.04);
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04);
 }
 
 .tab-switcher {
-    display: flex;
-    background-color: #f3f4f6;
-    border-radius: 14px;
-    padding: 4px;
-    gap: 4px;
+  display: flex;
+  background-color: #f3f4f6;
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
 }
 
 .tab-btn {
-    border: none;
-    background: transparent;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #6b6b6b;
-    transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6b6b;
+  transition: all 0.2s ease;
 }
 
 .tab-btn.active {
-    background-color: #111111;
-    color: #ffffff;
+  background-color: #111111;
+  color: #ffffff;
 }
 
 .tab-btn:hover:not(.active) {
-    background-color: #e9e9e9;
+  background-color: #e9e9e9;
 }
 
 .date-filter-form input[type="date"] {
-    max-width: 150px;
+  max-width: 150px;
 }
 
 .tab-content-panel.d-none {
-    display: none !important;
+  display: none !important;
 }
