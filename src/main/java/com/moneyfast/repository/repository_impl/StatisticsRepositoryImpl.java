@@ -29,7 +29,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
         FROM transferts t
         JOIN devises d
             ON d.id_devise = t.devise_source
-        WHERE LOWER(t.statut_transfert) IN ('confirmé', 'confirme', 'valide', 'termine')
+        WHERE LOWER(t.statut_transfert) IN ('confirmé')
           AND t.date_transfert BETWEEN ? AND ?
         GROUP BY d.libelle
         ORDER BY SUM(t.montant_envoye) DESC
@@ -55,23 +55,21 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
   }
 
   @Override
-  public List<ActiveClientStat> findTopClients(TopClientFilterEnum filter,
-      int limit,
-      LocalDateTime dateDebut,
+  public List<ActiveClientStat> findTopClients(TopClientFilterEnum filter, int limit, LocalDateTime dateDebut,
       LocalDateTime dateFin) {
 
     List<ActiveClientStat> list = new ArrayList<>();
 
-    // Sécurité sur l'ORDER BY
-    String orderBy = (filter == TopClientFilterEnum.BY_TOTAL_MONTANT)
-        ? "totalMontant"
-        : "transactionsCount";
+    String orderByClause = (filter == TopClientFilterEnum.BY_TOTAL_MONTANT)
+        ? "totalMontant DESC, transactionsCount DESC"
+        : "transactionsCount DESC, totalMontant DESC";
 
     String sql = """
         SELECT
             c.id_client,
             c.nom,
             c.prenom,
+            c.numero_telephone,
             COUNT(*) AS transactionsCount,
             SUM(t.montant_envoye) AS totalMontant
         FROM transferts t
@@ -79,12 +77,12 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             ON cp.id_compte = t.id_compte_source
         JOIN clients c
             ON c.id_client = cp.id_client
-        WHERE LOWER(t.statut_transfert) IN ('confirmé', 'confirme', 'valide', 'termine')
+        WHERE LOWER(t.statut_transfert) IN ('confirmé')
           AND t.date_transfert BETWEEN ? AND ?
         GROUP BY c.id_client, c.nom, c.prenom
-        ORDER BY %s DESC
+        ORDER BY %s
         LIMIT ?
-        """.formatted(orderBy);
+        """.formatted(orderByClause);
 
     try (Connection cn = DBConnection.getConnection();
         PreparedStatement ps = cn.prepareStatement(sql)) {
@@ -99,6 +97,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
           client.setIdClient((long) rs.getInt("id_client"));
           client.setNom(rs.getString("nom"));
           client.setPrenom(rs.getString("prenom"));
+          client.setNumeroTelephone(rs.getString("numero_telephone"));
 
           ActiveClientStat stat = new ActiveClientStat();
           stat.setClient(client);

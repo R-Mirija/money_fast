@@ -283,3 +283,46 @@ body {
 .btn-close-popup:hover {
   color: #111;
 }
+
+.topbar-modern {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 15px rgba(0,0,0,0.04);
+}
+
+.tab-switcher {
+    display: flex;
+    background-color: #f3f4f6;
+    border-radius: 14px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.tab-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b6b6b;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    background-color: #111111;
+    color: #ffffff;
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: #e9e9e9;
+}
+
+.date-filter-form input[type="date"] {
+    max-width: 150px;
+}
+
+.tab-content-panel.d-none {
+    display: none !important;
+}

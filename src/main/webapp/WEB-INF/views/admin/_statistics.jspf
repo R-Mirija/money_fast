@@ -1,0 +1,81 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<div class="row g-4 mb-4">
+
+  <!-- Recette totale de l'opérateur -->
+  <div class="col-lg-4 col-md-6">
+    <div class="overview-card d-flex flex-column justify-content-between" style="min-height: 180px;">
+      <div>
+        <h5 class="fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 1px; opacity: 0.8;">
+          Recette totale (frais perçus)
+        </h5>
+        <h2 class="fw-extrabold mb-0" style="font-size: 30px;"><%= df.format(stats.getTotalRecette()) %> EUR</h2>
+      </div>
+      <div style="font-size: 11px; opacity: 0.7; text-transform: uppercase; border-top: 1px solid rgba(255,255,255,0.15);" class="pt-2">
+        Sur la période sélectionnée
+      </div>
+    </div>
+  </div>
+
+  <!-- Volume total transféré par devise -->
+  <div class="col-lg-4 col-md-6">
+    <div class="sub-card" style="min-height: 180px;">
+      <h6 class="fw-bold text-uppercase text-muted mb-3" style="font-size: 11px; letter-spacing: 0.5px;">
+        Volume transféré par devise
+      </h6>
+      <div style="max-height: 130px; overflow-y: auto;">
+        <% Map<String, Double> transferts = stats.getTotalTransfert();
+          if (transferts != null && !transferts.isEmpty()) {
+            for (Map.Entry<String, Double> entry : transferts.entrySet()) {
+            %>
+            <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #f2f2f2;">
+              <span class="fw-bold" style="font-size: 13px;"><%= entry.getKey() %></span>
+              <span style="font-size: 13px;"><%= df.format(entry.getValue()) %></span>
+            </div>
+            <% } } else { %>
+            <div class="text-muted text-center py-3" style="font-size: 11px;">Aucune donnée sur la période</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top clients -->
+      <div class="col-lg-4 col-md-12">
+        <div class="sub-card" style="min-height: 180px;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">
+              Top clients
+            </h6>
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="admin-dashboard?tab=stats<%= dateDebutParam != null ? "&dateDebut="+dateDebutParam+"&dateFin="+dateFinParam : "" %>"
+                class="btn btn-sm <%= !filterByMontant ? "btn-dark" : "btn-outline-dark" %>" style="font-size: 10px;">Par nombre</a>
+                <a href="admin-dashboard?tab=stats<%= dateDebutParam != null ? "&dateDebut="+dateDebutParam+"&dateFin="+dateFinParam : "" %>&filter=montant"
+                  class="btn btn-sm <%= filterByMontant ? "btn-dark" : "btn-outline-dark" %>" style="font-size: 10px;">Par montant</a>
+                </div>
+              </div>
+              <div style="max-height: 130px; overflow-y: auto;">
+                <% List<ActiveClientStat> topClients = stats.getTopClients();
+                  if (topClients != null && !topClients.isEmpty()) {
+                    for (ActiveClientStat acs : topClients) {
+                    %>
+                    <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #f2f2f2;">
+                      <div>
+                        <div class="fw-bold" style="font-size: 12px;"><%= acs.getClient().getNom() %> <%= acs.getClient().getPrenom() %></div>
+                        <div class="text-muted" style="font-size: 10px;"><%= acs.getClient().getNumeroTelephone() %></div>
+                      </div>
+                      <div class="text-end">
+                        <% if (filterByMontant) { %>
+                        <span class="fw-bold" style="font-size: 12px;"><%= df.format(acs.getTotalMontant()) %></span>
+                        <% } else { %>
+                        <span class="fw-bold" style="font-size: 12px;"><%= acs.getTransactionsCount() %> op.</span>
+                        <% } %>
+                      </div>
+                    </div>
+                    <% } } else { %>
+                    <div class="text-muted text-center py-3" style="font-size: 11px;">Aucun client actif sur la période</div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+
+            </div>

@@ -62,18 +62,23 @@ public class AdminDashboardServlet extends HttpServlet {
         String finParam = request.getParameter("dateFin");
 
         try {
-            if (debutParam != null && finParam != null && !debutParam.isBlank() && !finParam.isBlank()) {
-                dateDebut = LocalDate.parse(debutParam).atStartOfDay();
-                dateFin = LocalDate.parse(finParam).atTime(LocalTime.MAX);
-            } else {
-                dateFin = LocalDateTime.now();
-                dateDebut = dateFin.minusMonths(1);
+            LocalDate debut = LocalDate.parse(debutParam);
+            LocalDate fin = LocalDate.parse(finParam);
+
+            if (debut.isAfter(fin)) {
+                request.getSession().setAttribute("erreur",
+                        "La date de début doit être antérieure à la date de fin.");
+                throw new IllegalArgumentException("Date de début supérieure à la date de fin");
             }
-        } catch (DateTimeParseException e) {
+
+            dateDebut = debut.atStartOfDay();
+            dateFin = fin.atTime(LocalTime.MAX);
+
+        } catch (Exception e) {
             dateFin = LocalDateTime.now();
             dateDebut = dateFin.minusMonths(1);
         }
-
+        
         // Filtre des clients
         String filterParam = request.getParameter("filter");
         TopClientFilterEnum filter = "montant".equals(filterParam)

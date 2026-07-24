@@ -1,0 +1,31 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<div class="topbar-modern mb-4">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+
+    <div class="tab-switcher" role="tablist">
+      <button type="button" class="tab-btn<%= statsActive ? "" : " active" %>" data-tab="overview" onclick="switchTab('overview')">
+        <i class="fi fi-rr-apps"></i> Vue d'ensemble
+      </button>
+      <button type="button" class="tab-btn<%= statsActive ? " active" : "" %>" data-tab="stats" onclick="switchTab('stats')">
+        <i class="fi fi-rr-stats"></i> Statistiques
+      </button>
+    </div>
+
+    <form action="admin-dashboard" method="get" class="date-filter-form d-flex align-items-center gap-2" id="dateFilterForm">
+      <input type="date" name="dateDebut" id="dateDebut" class="form-control form-control-dashboard"
+      value="<%= dateDebutParam != null ? dateDebutParam : "" %>" required>
+      <span class="text-muted small">au</span>
+      <input type="date" name="dateFin" id="dateFin" class="form-control form-control-dashboard"
+      value="<%= dateFinParam != null ? dateFinParam : "" %>" required>
+      <% if (filterByMontant) { %>
+      <input type="hidden" name="filter" value="montant">
+      <% } %>
+      <!-- on garde l'onglet courant après filtrage par dates -->
+      <input type="hidden" name="tab" value="<%= statsActive ? "stats" : "overview" %>">
+      <button type="submit" class="btn-admin-submit px-3" style="width: auto;">
+        <i class="fi fi-rr-filter"></i>
+      </button>
+    </form>
+  </div>
+</div>
