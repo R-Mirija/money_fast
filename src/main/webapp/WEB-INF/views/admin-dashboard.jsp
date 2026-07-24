@@ -403,7 +403,7 @@
                         <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Ajouter un Frais</h6>
                         <form action="admin-dashboard" method="post">
                             <input type="hidden" name="action" value="addFrais">
-                            
+
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
                                     <input type="text" name="montantMin" class="form-control form-control-dashboard" placeholder="Min" required style="font-size: 12px; padding: 8px 10px;">
@@ -462,86 +462,142 @@
                                     </div>
 
                                     <div class="swipe-front d-flex align-items-center justify-content-between p-2"
-                                         id="swipe-front-<%= c.getIdClient() %>"
-                                         onmousedown="startSwipe(event, '<%= c.getIdClient() %>')"
-                                         ontouchstart="startSwipe(event, '<%= c.getIdClient() %>')">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 11px;"><%= initiales.toUpperCase() %></div>
-                                            <div>
-                                                <div class="fw-bold" style="font-size: 11px; line-height: 1.1;"><%= c.getNom().toUpperCase() %></div>
-                                                <div class="text-muted" style="font-size: 9px;"><%= c.getNumeroTelephone() %></div>
-                                            </div>
-                                        </div>
-                                        <div class="text-end pe-1">
-                                            <!-- <div class="fw-bold text-success" style="font-size: 11px;"><%= solde %> MGA</div>--!>
-
-											<% if (co != null) { 
-											    // Comparaison directe car statutCompte est déjà un String
-											    boolean isActif = "actif".equalsIgnoreCase(co.getStatutCompte());
-											%>
-											    <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
-											        <!-- Badge de statut -->
-											        <span class="badge <%= isActif ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 9px; padding: 4px 8px; border-radius: 6px;">
-											            <%= isActif ? "Actif" : "Bloqué" %>
-											        </span>
-											        <form action="admin-dashboard" method="post" class="d-inline">
-											            <input type="hidden" name="action" value="toggleCompteStatut">
-											            <input type="hidden" name="numeroCompte" value="<%= co.getNumeroCompte() %>">
-											            <input type="hidden" name="statut" value="<%= co.getStatutCompte() %>">
-											            <input type="hidden" name="telephone" value="<%= c.getNumeroTelephone() %>">
-											            <button type="submit" class="border-0 bg-transparent p-0 d-inline-flex align-items-center" title="<%= isActif ? "Bloquer le compte" : "Débloquer le compte" %>" style="transition: transform 0.2s ease;">
-											                <i class="fi <%= isActif ? "fi-rr-unlock text-success" : "fi-rr-lock text-danger" %>" style="font-size: 12px; line-height: 1;"></i>
-											            </button>
-											        </form>
-											    </div>
-											<% } %>
-                                            
+                                    id="swipe-front-<%= c.getIdClient() %>"
+                                    onmousedown="startSwipe(event, '<%= c.getIdClient() %>')"
+                                    ontouchstart="startSwipe(event, '<%= c.getIdClient() %>')">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 11px;"><%= initiales.toUpperCase() %></div>
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 11px; line-height: 1.1;"><%= c.getNom().toUpperCase() %></div>
+                                            <div class="text-muted" style="font-size: 9px;"><%= c.getNumeroTelephone() %></div>
                                         </div>
                                     </div>
+                                    <div class="text-end pe-1">
+                                        <!-- <div class="fw-bold text-success" style="font-size: 11px;"><%= solde %> MGA</div>--!>
+                                        
+                                        <% if (co != null) {
+                                        // Comparaison directe car statutCompte est déjà un String
+                                        boolean isActif = "actif".equalsIgnoreCase(co.getStatutCompte());
+                                        %>
+                                        <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
+                                        <!-- Badge de statut -->
+                                        <span class="badge <%= isActif ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 9px; padding: 4px 8px; border-radius: 6px;">
+                                            <%= isActif ? "Actif" : "Bloqué" %>
+                                        </span>
+                                        <form action="admin-dashboard" method="post" class="d-inline">
+                                            <input type="hidden" name="action" value="toggleCompteStatut">
+                                            <input type="hidden" name="numeroCompte" value="<%= co.getNumeroCompte() %>">
+                                            <input type="hidden" name="statut" value="<%= co.getStatutCompte() %>">
+                                            <input type="hidden" name="telephone" value="<%= c.getNumeroTelephone() %>">
+                                            <button type="submit" class="border-0 bg-transparent p-0 d-inline-flex align-items-center" title="<%= isActif ? "Bloquer le compte" : "Débloquer le compte" %>" style="transition: transform 0.2s ease;">
+                                                <i class="fi <%= isActif ? "fi-rr-unlock text-success" : "fi-rr-lock text-danger" %>" style="font-size: 12px; line-height: 1;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <% } %>
+
                                 </div>
-                            <% } } else { %>
-                                <div class="text-muted text-center py-3" style="font-size: 11px;">Aucun client</div>
-                            <% } %>
+                            </div>
                         </div>
-                        <div class="text-center text-muted" style="font-size: 9px; opacity: 0.7; margin-top: 5px;">Supprimer ></div>
+                        <% } } else { %>
+                        <div class="text-muted text-center py-3" style="font-size: 11px;">Aucun client</div>
+                        <% } %>
                     </div>
+                    <div class="text-center text-muted" style="font-size: 9px; opacity: 0.7; margin-top: 5px;">Supprimer ></div>
                 </div>
             </div>
+        </div>
 
-            <div class="row g-4 mt-2">
-                <!-- 1. Restrictions de Pays -->
-                <div class="col-lg-4 col-md-6">
+        <div class="row g-4 mt-2">
+            <!-- 1. Restrictions de Pays -->
+            <div class="col-lg-4 col-md-6">
+                <div class="bottom-card" style="min-height: 380px;">
+                    <div class="badge-top-icon">
+                        <i class="fi fi-rr-globe"></i>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                        <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Restrictions de Pays</h6>
+                        <input type="text" id="countrySearch" class="form-control form-control-dashboard py-1" style="max-width: 140px; font-size: 11px;" placeholder="Chercher..." onkeyup="filterCountries()">
+                    </div>
+
+                    <div style="max-height: 250px; overflow-y: auto;">
+                        <table class="table align-middle" style="font-size: 12px; margin-bottom: 0;" id="countryTable">
+                            <tbody>
+                                <% if (listePays != null) {
+                                    for (Pays p : listePays) {
+                                        boolean isAutorise = "autorise".equals(p.getStatut());
+                                    %>
+                                    <tr>
+                                        <td class="fw-bold"><%= p.getLibelle() %></td>
+                                        <td>
+                                            <span class="badge <%= isAutorise ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 10px;">
+                                                <%= isAutorise ? "Autorisé" : "Interdit" %>
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <form action="admin-dashboard" method="post" class="d-inline">
+                                                <input type="hidden" name="action" value="togglePays">
+                                                <input type="hidden" name="idPays" value="<%= p.getIdPays() %>">
+                                                <input type="hidden" name="statut" value="<%= p.getStatut() %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1" style="font-size: 10px;">
+                                                    Modifier
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <% } } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Taux de Change Actifs -->
+                <div class="col-lg-4 / col-md-6">
                     <div class="bottom-card" style="min-height: 380px;">
                         <div class="badge-top-icon">
-                            <i class="fi fi-rr-globe"></i>
+                            <i class="fi fi-rr-chart-histogram"></i>
                         </div>
-
-                        <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-                            <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Restrictions de Pays</h6>
-                            <input type="text" id="countrySearch" class="form-control form-control-dashboard py-1" style="max-width: 140px; font-size: 11px;" placeholder="Chercher..." onkeyup="filterCountries()">
-                        </div>
-
+                        <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Taux de Change</h6>
                         <div style="max-height: 250px; overflow-y: auto;">
-                            <table class="table align-middle" style="font-size: 12px; margin-bottom: 0;" id="countryTable">
+                            <table class="table align-middle" style="font-size: 12px; margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>Devise to Devise</th>
+                                        <th>Taux</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    <% if (listePays != null) {
-                                        for (Pays p : listePays) {
-                                            boolean isAutorise = "autorise".equals(p.getStatut());
+                                    <% if (listeTaux != null) {
+                                        for (TauxDeChange t : listeTaux) {
+                                            String labelSrc = metadataRepository.findLibelleDevise(t.getDeviseSource());
+                                            String labelDest = metadataRepository.findLibelleDevise(t.getDeviseDestination());
                                         %>
                                         <tr>
-                                            <td class="fw-bold"><%= p.getLibelle() %></td>
+                                            <td class="fw-bold"><%= labelSrc %> to <%= labelDest %></td>
+
                                             <td>
-                                                <span class="badge <%= isAutorise ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 10px;">
-                                                    <%= isAutorise ? "Autorisé" : "Interdit" %>
-                                                </span>
+                                                <form action="admin-dashboard" method="post" class="d-flex align-items-center">
+                                                    <input type="hidden" name="action" value="updateTaux">
+                                                    <input type="hidden" name="idTaux" value="<%= t.getIdTaux() %>">
+                                                    <div class="input-group input-group-sm" style="max-width: 140px;">
+                                                        <span class="input-group-text bg-light fw-bold" style="font-size: 11px;">1=</span>
+                                                        <input type="text" name="nouveauTaux" class="form-control text-center fw-bold" value="<%= df.format(t.getTauxApplication()) %>" required style="font-size: 11px;">
+                                                        <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour la valeur" style="padding: 9px 12px;">
+                                                            <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
                                             </td>
+
                                             <td class="text-end">
-                                                <form action="admin-dashboard" method="post" class="d-inline">
-                                                    <input type="hidden" name="action" value="togglePays">
-                                                    <input type="hidden" name="idPays" value="<%= p.getIdPays() %>">
-                                                    <input type="hidden" name="statut" value="<%= p.getStatut() %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1" style="font-size: 10px;">
-                                                        Modifier
+                                                <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce taux de change ?');" class="d-inline">
+                                                    <input type="hidden" name="action" value="deleteTaux">
+                                                    <input type="hidden" name="idTaux" value="<%= t.getIdTaux() %>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer définitivement">
+                                                        <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
                                                     </button>
                                                 </form>
                                             </td>
@@ -552,255 +608,199 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- 2. Taux de Change Actifs -->
-                    <div class="col-lg-4 / col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="bottom-card" style="min-height: 380px;">
                             <div class="badge-top-icon">
-                                <i class="fi fi-rr-chart-histogram"></i>
+                                <i class="fi fi-rr-dollar"></i>
                             </div>
-                            <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Taux de Change</h6>
+                            <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Frais d'envoi</h6>
                             <div style="max-height: 250px; overflow-y: auto;">
-                                <table class="table align-middle" style="font-size: 12px; margin-bottom: 0;">
+                                <table class="table align-middle" style="font-size: 11px; margin-bottom: 0;">
                                     <thead>
                                         <tr>
-                                            <th>Devise to Devise</th>
-                                            <th>Taux</th>
+                                            <th>Tranche</th>
+                                            <th>Type</th>
+                                            <th>Valeur (Éditer)</th>
                                             <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% if (listeTaux != null) {
-                                            for (TauxDeChange t : listeTaux) {
-                                                String labelSrc = metadataRepository.findLibelleDevise(t.getDeviseSource());
-                                                String labelDest = metadataRepository.findLibelleDevise(t.getDeviseDestination());
+                                        <% if (listeFrais != null) {
+                                            for (Frais f : listeFrais) {
+                                                String labelDevise = metadataRepository.findLibelleDevise(f.getDeviseFrais());
                                             %>
                                             <tr>
-                                                <td class="fw-bold"><%= labelSrc %> to <%= labelDest %></td>
-
-                                                <td>
-                                                    <form action="admin-dashboard" method="post" class="d-flex align-items-center">
-                                                        <input type="hidden" name="action" value="updateTaux">
-                                                        <input type="hidden" name="idTaux" value="<%= t.getIdTaux() %>">
-                                                        <div class="input-group input-group-sm" style="max-width: 140px;">
-                                                            <span class="input-group-text bg-light fw-bold" style="font-size: 11px;">1=</span>
-                                                            <input type="text" name="nouveauTaux" class="form-control text-center fw-bold" value="<%= df.format(t.getTauxApplication()) %>" required style="font-size: 11px;">
-                                                            <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour la valeur" style="padding: 9px 12px;">
-                                                                <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </td>
-
-                                                <td class="text-end">
-                                                    <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce taux de change ?');" class="d-inline">
-                                                        <input type="hidden" name="action" value="deleteTaux">
-                                                        <input type="hidden" name="idTaux" value="<%= t.getIdTaux() %>">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer définitivement">
-                                                            <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                            <% } } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                                <td>De <strong><%= df.format(f.getMontantMin()) %></strong> à <strong><%= df.format(f.getMontantMax()) %> <%= labelDevise %></strong></td>                                                    <td>
+                                                <span class="badge bg-light text-dark border" style="font-size: 10px;">
+                                                    <%= f.getTypeFrais() == 1 ? "%" : "Montant" %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <form action="admin-dashboard" method="post" class="d-flex align-items-center">
+                                                    <input type="hidden" name="action" value="updateFrais">
+                                                    <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
+                                                    <div class="input-group input-group-sm" style="max-width: 110px;">
+                                                        <input type="text" name="nouvelleValeur" class="form-control text-center fw-bold" value="<%= df.format(f.getValeurFrais()) %>" required style="font-size: 11px; border-radius: 8px 0 0 8px;">                                                                <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour" style="padding: 9px 12px; border-radius: 0 8px 8px 0;">
+                                                        <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td class="text-end">
+                                            <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce barème de frais ?');" class="d-inline">
+                                                <input type="hidden" name="action" value="deleteFrais">
+                                                <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer">
+                                                    <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <% } } %>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="bottom-card" style="min-height: 380px;">
-                                <div class="badge-top-icon">
-                                    <i class="fi fi-rr-dollar"></i>
-                                </div>
-                                <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Frais d'envoi</h6>
-                                <div style="max-height: 250px; overflow-y: auto;">
-                                    <table class="table align-middle" style="font-size: 11px; margin-bottom: 0;">
-                                        <thead>
-                                            <tr>
-                                                <th>Tranche</th>
-                                                <th>Type</th>
-                                                <th>Valeur (Éditer)</th>
-                                                <th class="text-end">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% if (listeFrais != null) {
-                                                for (Frais f : listeFrais) {
-                                                    String labelDevise = metadataRepository.findLibelleDevise(f.getDeviseFrais());
-                                                %>
-                                                <tr>
-													<td>De <strong><%= df.format(f.getMontantMin()) %></strong> à <strong><%= df.format(f.getMontantMax()) %> <%= labelDevise %></strong></td>                                                    <td>
-                                                        <span class="badge bg-light text-dark border" style="font-size: 10px;">
-                                                            <%= f.getTypeFrais() == 1 ? "%" : "Montant" %>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <form action="admin-dashboard" method="post" class="d-flex align-items-center">
-                                                            <input type="hidden" name="action" value="updateFrais">
-                                                            <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
-                                                            <div class="input-group input-group-sm" style="max-width: 110px;">
-                                                                <input type="text" name="nouvelleValeur" class="form-control text-center fw-bold" value="<%= df.format(f.getValeurFrais()) %>" required style="font-size: 11px; border-radius: 8px 0 0 8px;">                                                                <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour" style="padding: 9px 12px; border-radius: 0 8px 8px 0;">
-                                                                    <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce barème de frais ?');" class="d-inline">
-                                                            <input type="hidden" name="action" value="deleteFrais">
-                                                            <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer">
-                                                                <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
-                                                            </button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                                <% } } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
+                </div>
+            </div>
 
-                    <button class="fab-admin" onclick="toggleAdminPopup()" title="Équipe d'Administration">
-                        <i class="fi fi-rr-users-alt" style="line-height: 1; display: block; margin-top: 4px;"></i>
-                    </button>
+        </div>
 
-                    <div id="adminPopup" class="admin-popup-panel">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Nouveau Admin</h6>
-                            <button type="button" class="btn-close-popup" onclick="toggleAdminPopup()">&times;</button>
-                        </div>
-                        <form action="admin-dashboard" method="post">
-                            <input type="hidden" name="action" value="addAdmin">
-                            <div class="mb-2">
-                                <input type="text" name="username" class="form-control form-control-dashboard" placeholder="Nom d'utilisateur" required>
-                            </div>
-                            <div class="mb-2">
-                                <input type="email" name="email" class="form-control form-control-dashboard" placeholder="Adresse Email" required>
-                            </div>
-                            <div class="mb-3">
-                                <input type="password" name="password" class="form-control form-control-dashboard" placeholder="Mot de passe" required>
-                            </div>
-                            <button type="submit" class="btn-admin-submit py-2">Enregistrer</button>
-                        </form>
-                    </div>
+        <button class="fab-admin" onclick="toggleAdminPopup()" title="Équipe d'Administration">
+            <i class="fi fi-rr-users-alt" style="line-height: 1; display: block; margin-top: 4px;"></i>
+        </button>
 
-                    <script>
-                        function toggleAdminPopup() {
-                            const popup = document.getElementById('adminPopup');
-                            if (popup.classList.contains('show')) {
-                                popup.classList.remove('show');
-                                setTimeout(() => { popup.style.display = 'none'; }, 300);
-                            } else {
-                                popup.style.display = 'block';
-                                setTimeout(() => { popup.classList.add('show'); }, 10);
-                            }
-                        }
-                        
-                        function filterCountries() {
-                            let input = document.getElementById("countrySearch");
-                            let filter = input.value.toLowerCase();
-                            let table = document.getElementById("countryTable");
-                            let tr = table.getElementsByTagName("tr");
-                            
-                            for (let i = 0; i < tr.length; i++) {
-                                let td = tr[i].getElementsByTagName("td")[0];
-                                if (td) {
-                                    let textValue = td.textContent || td.innerText;
-                                    if (textValue.toLowerCase().indexOf(filter) > -1) {
-                                        tr[i].style.display = "";
-                                    } else {
-                                        tr[i].style.display = "none";
-                                    }
-                                }
-                            }
-                        }
-                        
-                        function closeToast() {
-                            const toast = document.getElementById('toast-error');
-                            if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
-                        }
-                        function closeSuccessToast() {
-                            const toast = document.getElementById('toast-success');
-                            if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
-                        }
-                        window.addEventListener('DOMContentLoaded', () => {
-                            const err = document.getElementById('toast-error');
-                            if (err) { setTimeout(() => { closeToast(); }, 5000); }
-                            const succ = document.getElementById('toast-success');
-                            if (succ) { setTimeout(() => { closeSuccessToast(); }, 5000); }
-                        });
-                        
-                        // Swipe-to-delete JS
-                        let startX = 0;
-                        let currentX = 0;
-                        let activeClientId = null;
-                        let activeFrontElement = null;
-                        let isDragging = false;
-                        
-                        function startSwipe(e, clientId) {
-                            isDragging = true;
-                            activeClientId = clientId;
-                            activeFrontElement = document.getElementById('swipe-front-' + clientId);
-                            
-                            startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-                            activeFrontElement.style.transition = 'none';
-                            
-                            document.addEventListener('mousemove', moveSwipe);
-                            document.addEventListener('mouseup', endSwipe);
-                            document.addEventListener('touchmove', moveSwipe);
-                            document.addEventListener('touchend', endSwipe);
-                        }
-                        
-                        function moveSwipe(e) {
-                            if (!isDragging || !activeFrontElement) return;
-                            currentX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-                            let diffX = currentX - startX;
-                            
-                            if (diffX < 0) diffX = 0;
-                            if (diffX > 80) diffX = 80;
-                            
-                            activeFrontElement.style.transform = "translateX(" + diffX + "px)";
-                        }
-                        
-                        function endSwipe() {
-                            if (!isDragging || !activeFrontElement) return;
-                            isDragging = false;
-                            
-                            activeFrontElement.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                            
-                            let diffX = currentX - startX;
-                            
-                            if (diffX > 40) {
-                                activeFrontElement.style.transform = 'translateX(80px)';
-                            } else {
-                                activeFrontElement.style.transform = 'translateX(0)';
-                            }
-                            
-                            document.removeEventListener('mousemove', moveSwipe);
-                            document.removeEventListener('mouseup', endSwipe);
-                            document.removeEventListener('touchmove', moveSwipe);
-                            document.removeEventListener('touchend', endSwipe);
-                        }
-                        
-                        function confirmDelete(event, clientId) {
-                            event.preventDefault();
-                            
-                            if (confirm("Voulez-vous supprimer définitivement ce client et son compte associé ?")) {
-                                event.target.submit();
-                            } else {
-                                const front = document.getElementById('swipe-front-' + clientId);
-                                if (front) {
-                                    front.style.transform = 'translateX(0)';
-                                }
-                            }
-                        }
-                    </script>
+        <div id="adminPopup" class="admin-popup-panel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Nouveau Admin</h6>
+                <button type="button" class="btn-close-popup" onclick="toggleAdminPopup()">&times;</button>
+            </div>
+            <form action="admin-dashboard" method="post">
+                <input type="hidden" name="action" value="addAdmin">
+                <div class="mb-2">
+                    <input type="text" name="username" class="form-control form-control-dashboard" placeholder="Nom d'utilisateur" required>
+                </div>
+                <div class="mb-2">
+                    <input type="email" name="email" class="form-control form-control-dashboard" placeholder="Adresse Email" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control form-control-dashboard" placeholder="Mot de passe" required>
+                </div>
+                <button type="submit" class="btn-admin-submit py-2">Enregistrer</button>
+            </form>
+        </div>
 
-                </body>
-            </html>
+        <script>
+            function toggleAdminPopup() {
+                const popup = document.getElementById('adminPopup');
+                if (popup.classList.contains('show')) {
+                    popup.classList.remove('show');
+                    setTimeout(() => { popup.style.display = 'none'; }, 300);
+                } else {
+                    popup.style.display = 'block';
+                    setTimeout(() => { popup.classList.add('show'); }, 10);
+                }
+            }
+            
+            function filterCountries() {
+                let input = document.getElementById("countrySearch");
+                let filter = input.value.toLowerCase();
+                let table = document.getElementById("countryTable");
+                let tr = table.getElementsByTagName("tr");
+                
+                for (let i = 0; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        let textValue = td.textContent || td.innerText;
+                        if (textValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            
+            function closeToast() {
+                const toast = document.getElementById('toast-error');
+                if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
+            }
+            function closeSuccessToast() {
+                const toast = document.getElementById('toast-success');
+                if (toast) { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 500); }
+            }
+            window.addEventListener('DOMContentLoaded', () => {
+                const err = document.getElementById('toast-error');
+                if (err) { setTimeout(() => { closeToast(); }, 5000); }
+                const succ = document.getElementById('toast-success');
+                if (succ) { setTimeout(() => { closeSuccessToast(); }, 5000); }
+            });
+            
+            // Swipe-to-delete JS
+            let startX = 0;
+            let currentX = 0;
+            let activeClientId = null;
+            let activeFrontElement = null;
+            let isDragging = false;
+            
+            function startSwipe(e, clientId) {
+                isDragging = true;
+                activeClientId = clientId;
+                activeFrontElement = document.getElementById('swipe-front-' + clientId);
+                
+                startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+                activeFrontElement.style.transition = 'none';
+                
+                document.addEventListener('mousemove', moveSwipe);
+                document.addEventListener('mouseup', endSwipe);
+                document.addEventListener('touchmove', moveSwipe);
+                document.addEventListener('touchend', endSwipe);
+            }
+            
+            function moveSwipe(e) {
+                if (!isDragging || !activeFrontElement) return;
+                currentX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+                let diffX = currentX - startX;
+                
+                if (diffX < 0) diffX = 0;
+                if (diffX > 80) diffX = 80;
+                
+                activeFrontElement.style.transform = "translateX(" + diffX + "px)";
+            }
+            
+            function endSwipe() {
+                if (!isDragging || !activeFrontElement) return;
+                isDragging = false;
+                
+                activeFrontElement.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                
+                let diffX = currentX - startX;
+                
+                if (diffX > 40) {
+                    activeFrontElement.style.transform = 'translateX(80px)';
+                } else {
+                    activeFrontElement.style.transform = 'translateX(0)';
+                }
+                
+                document.removeEventListener('mousemove', moveSwipe);
+                document.removeEventListener('mouseup', endSwipe);
+                document.removeEventListener('touchmove', moveSwipe);
+                document.removeEventListener('touchend', endSwipe);
+            }
+            
+            function confirmDelete(event, clientId) {
+                event.preventDefault();
+                
+                if (confirm("Voulez-vous supprimer définitivement ce client et son compte associé ?")) {
+                    event.target.submit();
+                } else {
+                    const front = document.getElementById('swipe-front-' + clientId);
+                    if (front) {
+                        front.style.transform = 'translateX(0)';
+                    }
+                }
+            }
+        </script>
+
+    </body>
+</html>

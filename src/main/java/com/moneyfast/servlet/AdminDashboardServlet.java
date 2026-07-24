@@ -2,33 +2,45 @@ package com.moneyfast.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 
+import com.moneyfast.enums.TopClientFilterEnum;
 import com.moneyfast.model.Admin;
 import com.moneyfast.model.Client;
 import com.moneyfast.model.Compte;
 import com.moneyfast.model.Pays;
-import com.moneyfast.model.Transfert;
+import com.moneyfast.model.Statistics;
 import com.moneyfast.model.TauxDeChange;
 import com.moneyfast.model.Devise;
+import com.moneyfast.model.Transfert;
+
+import com.moneyfast.repository.AdminRepository;
+import com.moneyfast.repository.ClientRepository;
+import com.moneyfast.repository.CompteRepository;
+import com.moneyfast.repository.TransfertRepository;
+import com.moneyfast.repository.MetadataRepository;
+import com.moneyfast.repository.StatisticsRepository;
+import com.moneyfast.repository.TauxRepository;
+
 import com.moneyfast.model.Frais;
 import com.moneyfast.repository.*;
 import com.moneyfast.repository.repository_impl.AdminRepositoryImpl;
 import com.moneyfast.repository.repository_impl.ClientRepositoryImpl;
 import com.moneyfast.repository.repository_impl.CompteRepositoryImpl;
-import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
-import com.moneyfast.repository.repository_impl.StatsRepositoryImpl;
-import com.moneyfast.repository.repository_impl.TauxRepositoryImpl;
 import com.moneyfast.repository.repository_impl.TransfertRepositoryImpl;
+import com.moneyfast.repository.repository_impl.MetadataRepositoryImpl;
+import com.moneyfast.repository.repository_impl.StatisticsRepositoryImpl;
+import com.moneyfast.repository.repository_impl.TauxRepositoryImpl;
 import com.moneyfast.repository.repository_impl.FraisRepositoryImpl;
 import com.moneyfast.util.PasswordUtil;
 
 @WebServlet("/admin-dashboard")
 public class AdminDashboardServlet extends HttpServlet {
+
     private static final long serialVersionUID = 1L;
 
     private final AdminRepository adminRepository = new AdminRepositoryImpl();
@@ -36,24 +48,60 @@ public class AdminDashboardServlet extends HttpServlet {
     private final CompteRepository compteRepository = new CompteRepositoryImpl();
     private final TransfertRepository transfertRepository = new TransfertRepositoryImpl();
     private final MetadataRepository metadataRepository = new MetadataRepositoryImpl();
-    private final StatsRepository statsRepository = new StatsRepositoryImpl();
+    private final StatisticsRepository statsRepository = new StatisticsRepositoryImpl();
     private final TauxRepository tauxRepository = new TauxRepositoryImpl();
     private final FraisRepository fraisRepository = new FraisRepositoryImpl();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         Admin admin = (Admin) request.getSession().getAttribute("userAdmin");
+
         if (admin == null) {
             response.sendRedirect("admin-portal");
             return;
         }
+
+        // Configuration des dates pour les statistiques
+        Timestamp dateDebut;
+        Timestamp dateFin;
+        String debutParam = request.getParameter("dateDebut");
+        String finParam = request.getParameter("dateFin");
+
+        try {
+            if (debutParam != null && finParam != null && !debutParam.isEmpty() && !finParam.isEmpty()) {
+                dateDebut = Timestamp.valueOf(debutParam + " 00:00:00");
+                dateFin = Timestamp.valueOf(finParam + " 23:59:59");
+            } else {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.MONTH, -1);
+                dateDebut = new Timestamp(cal.getTimeInMillis());
+                dateFin = new Timestamp(System.currentTimeMillis());
+            }
+        } catch (Exception e) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MONTH, -1);
+            dateDebut = new Timestamp(cal.getTimeInMillis());
+            dateFin = new Timestamp(System.currentTimeMillis());
+        }
+
+        // Filtre des clients
+        String filterParam = request.getParameter("filter");
+        TopClientFilterEnum filter = "montant".equals(filterParam)
+                ? TopClientFilterEnum.BY_TOTAL_MONTANT
+                : TopClientFilterEnum.BY_TRANSACTION_COUNT;
+
+        // Récupération des données
 
         List<Client> listeClients = clientRepository.findAll();
         List<Pays> listePays = metadataRepository.findAllPays();
         List<TauxDeChange> listeTaux = tauxRepository.findAll();
         List<Devise> listeDevises = metadataRepository.findAllDevises();
         List<Frais> listeFrais = fraisRepository.findAll();
-        
-        double totalRecettes = statsRepository.getTotalRecettes();
+        Statistics stats = statsRepository.getGlobalStatistics(filter, 10, dateDebut, dateFin);
+
+        double totalRecettes = stats.getTotalRecette();
 
         request.setAttribute("listeClients", listeClients);
         request.setAttribute("listePays", listePays);
@@ -65,8 +113,11 @@ public class AdminDashboardServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/admin-dashboard.jsp").forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         Admin admin = (Admin) request.getSession().getAttribute("userAdmin");
+
         if (admin == null) {
             response.sendRedirect("admin-portal");
             return;
@@ -74,7 +125,11 @@ public class AdminDashboardServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        // GESTION DES PAYS
+        /*
+         * ===============================
+         * GESTON DES PAYS
+         * ===============================
+         */
         if ("togglePays".equals(action)) {
             int idPays = Integer.parseInt(request.getParameter("idPays"));
             String statutActuel = request.getParameter("statut");
@@ -84,26 +139,33 @@ public class AdminDashboardServlet extends HttpServlet {
             request.getSession().setAttribute("succes", "Statut du pays mis à jour !");
             response.sendRedirect("admin-dashboard");
         }
-        
-        // SUPPRESSION CLIENTS
+
+        /*
+         * ===============================
+         * SUPPRESSION CLIENT
+         * ===============================
+         */
         else if ("deleteClient".equals(action)) {
             Long idClient = Long.parseLong(request.getParameter("idClient"));
             Client client = clientRepository.findById(idClient);
 
             if (client != null) {
                 Compte compte = compteRepository.findByTelephone(client.getNumeroTelephone());
-                
+
                 if (compte != null) {
                     if (compte.getSolde() > 0) {
-                        request.getSession().setAttribute("erreur", "Impossible de supprimer : Le solde du client est supérieur à 0 !");
+                        request.getSession().setAttribute("erreur",
+                                "Impossible de supprimer : Le solde du client est supérieur à 0 !");
                         response.sendRedirect("admin-dashboard");
                         return;
                     }
 
                     List<Transfert> operations = transfertRepository.findByCompte(compte.getIdCompte());
                     for (Transfert t : operations) {
-                        if ("en attente".equalsIgnoreCase(t.getStatutTransfert()) || "en cours".equalsIgnoreCase(t.getStatutTransfert())) {
-                            request.getSession().setAttribute("erreur", "Impossible de supprimer : Le client a des transactions en cours !");
+                        if ("en attente".equalsIgnoreCase(t.getStatutTransfert())
+                                || "en cours".equalsIgnoreCase(t.getStatutTransfert())) {
+                            request.getSession().setAttribute("erreur",
+                                    "Impossible de supprimer : Le client possède des transactions en cours !");
                             response.sendRedirect("admin-dashboard");
                             return;
                         }
@@ -115,7 +177,7 @@ public class AdminDashboardServlet extends HttpServlet {
             }
             response.sendRedirect("admin-dashboard");
         }
-        //blocage & deblocage
+        // blocage & deblocage
         else if ("toggleCompteStatut".equals(action)) {
             try {
                 int numeroCompte = Integer.parseInt(request.getParameter("numeroCompte"));
@@ -125,21 +187,33 @@ public class AdminDashboardServlet extends HttpServlet {
                 String nouveauStatut = "ACTIF".equalsIgnoreCase(statutActuel) ? "suspendu" : "actif";
                 compteRepository.updateStatut(numeroCompte, nouveauStatut);
                 String actionMessage = "actif".equalsIgnoreCase(nouveauStatut) ? "débloqué" : "bloqué";
-                request.getSession().setAttribute("succes", "Le compte de " + telephone + " a été " + actionMessage + " avec succès.");
-                
+                request.getSession().setAttribute("succes",
+                        "Le compte de " + telephone + " a été " + actionMessage + " avec succès.");
+
             } catch (Exception e) {
                 request.getSession().setAttribute("erreur", "Erreur lors de la mise à jour du statut du compte.");
             }
             response.sendRedirect("admin-dashboard");
         }
-        // AJOUTER UN ADMIN
+
+        /*
+         * ===============================
+         * AJOUT ADMIN
+         * ===============================
+         */
         else if ("addAdmin".equals(action)) {
             String username = request.getParameter("username");
             String email = request.getParameter("email");
-            String passwordPlain = request.getParameter("password");
+            String password = request.getParameter("password");
+
+            if (password.trim().length() < 6) {
+                request.getSession().setAttribute("erreur", "Mot de passe trop court ! (min 6 caractères)");
+                response.sendRedirect("admin-dashboard");
+                return;
+            }
 
             if (adminRepository.findByUsername(username) != null || adminRepository.findByEmail(email) != null) {
-                request.getSession().setAttribute("erreur", "Erreur : Ce nom ou cet e-mail est déjà utilisé !");
+                request.getSession().setAttribute("erreur", "Ce nom ou cet e-mail est déjà utilisé !");
                 response.sendRedirect("admin-dashboard");
                 return;
             }
@@ -147,30 +221,34 @@ public class AdminDashboardServlet extends HttpServlet {
             Admin nouvelAdmin = new Admin();
             nouvelAdmin.setUsername(username);
             nouvelAdmin.setEmail(email);
-            nouvelAdmin.setPassword(PasswordUtil.hashPassword(passwordPlain));
+            nouvelAdmin.setPassword(PasswordUtil.hashPassword(password));
 
             adminRepository.save(nouvelAdmin);
             request.getSession().setAttribute("succes", "Le nouvel administrateur " + username + " a été enregistré !");
             response.sendRedirect("admin-dashboard");
         }
 
-        // CRÉER UN NOUVEAU TAUX
+        /*
+         * ===============================
+         * AJOUT TAUX
+         * ===============================
+         */
         else if ("addTaux".equals(action)) {
             try {
                 int deviseSource = Integer.parseInt(request.getParameter("deviseSource"));
                 int deviseDestination = Integer.parseInt(request.getParameter("deviseDestination"));
                 float valeurTaux = Float.parseFloat(request.getParameter("valeurTaux"));
 
-                TauxDeChange t = new TauxDeChange();
-                t.setCodeTaux((int) (Math.random() * 90000) + 10000);
-                t.setDeviseSource(deviseSource);
-                t.setDeviseDestination(deviseDestination);
-                t.setMontantMin(0.00);
-                t.setMontantMax(9999999.00);
-                t.setTauxApplication(valeurTaux);
-                t.setActive(true);
+                TauxDeChange taux = new TauxDeChange();
+                taux.setCodeTaux((int) (Math.random() * 90000) + 10000);
+                taux.setDeviseSource(deviseSource);
+                taux.setDeviseDestination(deviseDestination);
+                taux.setMontantMin(0.0);
+                taux.setMontantMax(9999999.0);
+                taux.setTauxApplication(valeurTaux);
+                taux.setActive(true);
 
-                tauxRepository.save(t);
+                tauxRepository.save(taux);
                 request.getSession().setAttribute("succes", "Nouveau taux de change configuré avec succès !");
             } catch (Exception e) {
                 request.getSession().setAttribute("erreur", "Erreur : Format de saisie du taux invalide !");
@@ -178,25 +256,37 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
 
-        // MODIFIER UN TAUX
+        /*
+         * ===============================
+         * UPDATE TAUX
+         * ===============================
+         */
         else if ("updateTaux".equals(action)) {
             try {
                 int idTaux = Integer.parseInt(request.getParameter("idTaux"));
                 float nouveauTaux = Float.parseFloat(request.getParameter("nouveauTaux"));
-                
+
                 tauxRepository.updateTaux(idTaux, nouveauTaux, true);
                 request.getSession().setAttribute("succes", "La valeur du taux de change a été mise à jour.");
+
+                tauxRepository.updateTaux(idTaux, nouveauTaux, true);
+                request.getSession().setAttribute("succes", "La valeur du taux a été mise à jour.");
             } catch (Exception e) {
                 request.getSession().setAttribute("erreur", "Erreur lors de la mise à jour du taux !");
             }
             response.sendRedirect("admin-dashboard");
         }
 
-        // SUPPRIMER UN TAUX
+        /*
+         * ===============================
+         * SUPPRESSION TAUX
+         * ===============================
+         */
         else if ("deleteTaux".equals(action)) {
             try {
                 int idTaux = Integer.parseInt(request.getParameter("idTaux"));
                 tauxRepository.delete(idTaux);
+                request.getSession().setAttribute("succes", "Le taux de change a été supprimé définitivement.");
                 request.getSession().setAttribute("succes", "Le taux de change a été supprimé définitivement.");
             } catch (Exception e) {
                 request.getSession().setAttribute("erreur", "Erreur de suppression du taux !");
@@ -204,7 +294,7 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect("admin-dashboard");
         }
 
-        // FRAIS 
+        // FRAIS
         else if ("addFrais".equals(action)) {
             try {
                 int deviseFrais = Integer.parseInt(request.getParameter("deviseFrais"));
@@ -228,8 +318,7 @@ public class AdminDashboardServlet extends HttpServlet {
                 request.getSession().setAttribute("erreur", "Frais invalide !");
             }
             response.sendRedirect("admin-dashboard");
-        }
-        else if ("updateFrais".equals(action)) {
+        } else if ("updateFrais".equals(action)) {
             try {
                 int idFrais = Integer.parseInt(request.getParameter("idFrais"));
                 double nouvelleValeur = Double.parseDouble(request.getParameter("nouvelleValeur").replace(',', '.'));
@@ -244,8 +333,7 @@ public class AdminDashboardServlet extends HttpServlet {
                 request.getSession().setAttribute("erreur", "Erreur lors de la mise à jour des frais !");
             }
             response.sendRedirect("admin-dashboard");
-        }
-        else if ("deleteFrais".equals(action)) {
+        } else if ("deleteFrais".equals(action)) {
             try {
                 int idFrais = Integer.parseInt(request.getParameter("idFrais"));
                 fraisRepository.delete(idFrais);

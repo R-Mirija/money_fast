@@ -1,0 +1,159 @@
+package com.moneyfast.repository.repository_impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.moneyfast.enums.TopClientFilterEnum;
+import com.moneyfast.model.ActiveClientStat;
+import com.moneyfast.model.Client;
+import com.moneyfast.model.Statistics;
+import com.moneyfast.repository.DBConnection;
+import com.moneyfast.repository.StatisticsRepository;
+
+public class StatisticsRepositoryImpl implements StatisticsRepository {
+
+  @Override
+  public Map<String, Double> getVolumeParDevise(Timestamp dateDebut, Timestamp dateFin) {
+    Map<String, Double> volumes = new LinkedHashMap<>();
+
+    String sql = """
+        SELECT d.libelle,
+               SUM(t.montant_envoye)
+        FROM transferts t
+        JOIN devises d
+            ON d.id_devise = t.devise_source
+        WHERE LOWER(t.statut_transfert) IN ('confirmé', 'confirme', 'valide', 'termine')
+          AND t.date_transfert BETWEEN ? AND ?
+        GROUP BY d.libelle
+        ORDER BY SUM(t.montant_envoye) DESC
+        """;
+
+    try (Connection cn = DBConnection.getConnection();
+        PreparedStatement ps = cn.prepareStatement(sql)) {
+
+      ps.setTimestamp(1, dateDebut);
+      ps.setTimestamp(2, dateFin);
+
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          volumes.put(rs.getString(1), rs.getDouble(2));
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return volumes;
+  }
+
+  @Override
+  public List<ActiveClientStat> findTopClients(TopClientFilterEnum filter,
+      int limit,
+      Timestamp dateDebut,
+      Timestamp dateFin) {
+
+    List<ActiveClientStat> list = new ArrayList<>();
+
+    // Sécurité pour l'injection SQL sur l'ORDER BY
+    String orderBy = (filter == TopClientFilterEnum.BY_TOTAL_MONTANT)
+        ? "totalMontant"
+        : "transactionsCount";
+
+    String sql = """
+        SELECT
+            c.id_client,
+            c.nom,
+            c.prenom,
+            COUNT(*) AS transactionsCount,
+            SUM(t.montant_envoye) AS totalMontant
+        FROM transferts t
+        JOIN comptes cp
+            ON cp.id_compte = t.id_compte_source
+        JOIN clients c
+            ON c.id_client = cp.id_client
+        WHERE LOWER(t.statut_transfert) IN ('confirmé', 'confirme', 'valide', 'termine')
+          AND t.date_transfert BETWEEN ? AND ?
+        GROUP BY c.id_client, c.nom, c.prenom
+        ORDER BY """ + orderBy + """
+        DESC
+        LIMIT ?
+        """;
+
+    try (Connection cn = DBConnection.getConnection();
+        PreparedStatement ps = cn.prepareStatement(sql)) {
+
+      ps.setTimestamp(1, dateDebut);
+      ps.setTimestamp(2, dateFin);
+      ps.setInt(3, limit);
+
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          Client client = new Client();
+          client.setIdClient((long) rs.getInt("id_client"));
+          client.setNom(rs.getString("nom"));
+          client.setPrenom(rs.getString("prenom"));
+
+          ActiveClientStat stat = new ActiveClientStat();
+          stat.setClient(client);
+          stat.setTransactionsCount(rs.getInt("transactionsCount"));
+          stat.setTotalMontant(rs.getDouble("totalMontant"));
+
+          list.add(stat);
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return list;
+  }
+
+  @Override
+  public Statistics getGlobalStatistics(TopClientFilterEnum filter,
+      int topLimit,
+      Timestamp dateDebut,
+      Timestamp dateFin) {
+
+    Statistics statistics = new Statistics();
+    statistics.setTotalRecette(getTotalRecette(dateDebut, dateFin));
+    statistics.setTotalTransfert(getVolumeParDevise(dateDebut, dateFin));
+    statistics.setTopClients(findTopClients(filter, topLimit, dateDebut, dateFin));
+
+    return statistics;
+  }
+
+  private double getTotalRecette(Timestamp dateDebut, Timestamp dateFin) {
+    String sql = """
+        SELECT COALESCE(SUM(frais), 0)
+        FROM transferts
+        WHERE date_transfert BETWEEN ? AND ?
+        """;
+
+    try (Connection cn = DBConnection.getConnection();
+        PreparedStatement ps = cn.prepareStatement(sql)) {
+
+      ps.setTimestamp(1, dateDebut);
+      ps.setTimestamp(2, dateFin);
+
+      try (ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+          return rs.getDouble(1);
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return 0.0;
+  }
+}
