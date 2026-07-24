@@ -1,6 +1,6 @@
 package com.moneyfast.repository;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.List;
 
@@ -10,9 +10,11 @@ import com.moneyfast.model.Statistics;
 
 public interface StatisticsRepository {
 
-  Map<String, Double> getVolumeParDevise(Timestamp dateDebut, Timestamp dateFin);
+  Map<String, Double> getVolumeParDevise(LocalDateTime dateDebut, LocalDateTime dateFin);
 
-  List<ActiveClientStat> findTopClients(TopClientFilterEnum filter, int limit, Timestamp dateDebut, Timestamp dateFin);
+  List<ActiveClientStat> findTopClients(TopClientFilterEnum filter, int limit, LocalDateTime dateDebut,
+      LocalDateTime dateFin);
 
-  Statistics getGlobalStatistics(TopClientFilterEnum filter, int topLimit, Timestamp dateDebut, Timestamp dateFin);
+  Statistics getGlobalStatistics(TopClientFilterEnum filter, int topLimit, LocalDateTime dateDebut,
+      LocalDateTime dateFin);
 }

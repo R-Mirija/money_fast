@@ -4,8 +4,10 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import com.moneyfast.enums.TopClientFilterEnum;
@@ -17,15 +19,6 @@ import com.moneyfast.model.Statistics;
 import com.moneyfast.model.TauxDeChange;
 import com.moneyfast.model.Devise;
 import com.moneyfast.model.Transfert;
-
-import com.moneyfast.repository.AdminRepository;
-import com.moneyfast.repository.ClientRepository;
-import com.moneyfast.repository.CompteRepository;
-import com.moneyfast.repository.TransfertRepository;
-import com.moneyfast.repository.MetadataRepository;
-import com.moneyfast.repository.StatisticsRepository;
-import com.moneyfast.repository.TauxRepository;
-
 import com.moneyfast.model.Frais;
 import com.moneyfast.repository.*;
 import com.moneyfast.repository.repository_impl.AdminRepositoryImpl;
@@ -52,7 +45,6 @@ public class AdminDashboardServlet extends HttpServlet {
     private final TauxRepository tauxRepository = new TauxRepositoryImpl();
     private final FraisRepository fraisRepository = new FraisRepositoryImpl();
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -63,27 +55,23 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
-        // Configuration des dates pour les statistiques
-        Timestamp dateDebut;
-        Timestamp dateFin;
+        // Configuration des dates avec java.time (LocalDateTime / LocalDate)
+        LocalDateTime dateDebut;
+        LocalDateTime dateFin;
         String debutParam = request.getParameter("dateDebut");
         String finParam = request.getParameter("dateFin");
 
         try {
-            if (debutParam != null && finParam != null && !debutParam.isEmpty() && !finParam.isEmpty()) {
-                dateDebut = Timestamp.valueOf(debutParam + " 00:00:00");
-                dateFin = Timestamp.valueOf(finParam + " 23:59:59");
+            if (debutParam != null && finParam != null && !debutParam.isBlank() && !finParam.isBlank()) {
+                dateDebut = LocalDate.parse(debutParam).atStartOfDay();
+                dateFin = LocalDate.parse(finParam).atTime(LocalTime.MAX);
             } else {
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.MONTH, -1);
-                dateDebut = new Timestamp(cal.getTimeInMillis());
-                dateFin = new Timestamp(System.currentTimeMillis());
+                dateFin = LocalDateTime.now();
+                dateDebut = dateFin.minusMonths(1);
             }
-        } catch (Exception e) {
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MONTH, -1);
-            dateDebut = new Timestamp(cal.getTimeInMillis());
-            dateFin = new Timestamp(System.currentTimeMillis());
+        } catch (DateTimeParseException e) {
+            dateFin = LocalDateTime.now();
+            dateDebut = dateFin.minusMonths(1);
         }
 
         // Filtre des clients
@@ -93,7 +81,6 @@ public class AdminDashboardServlet extends HttpServlet {
                 : TopClientFilterEnum.BY_TRANSACTION_COUNT;
 
         // Récupération des données
-
         List<Client> listeClients = clientRepository.findAll();
         List<Pays> listePays = metadataRepository.findAllPays();
         List<TauxDeChange> listeTaux = tauxRepository.findAll();
@@ -101,14 +88,12 @@ public class AdminDashboardServlet extends HttpServlet {
         List<Frais> listeFrais = fraisRepository.findAll();
         Statistics stats = statsRepository.getGlobalStatistics(filter, 10, dateDebut, dateFin);
 
-        double totalRecettes = stats.getTotalRecette();
-
         request.setAttribute("listeClients", listeClients);
         request.setAttribute("listePays", listePays);
         request.setAttribute("listeTaux", listeTaux);
         request.setAttribute("listeDevises", listeDevises);
         request.setAttribute("listeFrais", listeFrais);
-        request.setAttribute("totalRecettes", totalRecettes);
+        request.setAttribute("stats", stats);
 
         request.getRequestDispatcher("/WEB-INF/views/admin-dashboard.jsp").forward(request, response);
     }
@@ -162,8 +147,8 @@ public class AdminDashboardServlet extends HttpServlet {
 
                     List<Transfert> operations = transfertRepository.findByCompte(compte.getIdCompte());
                     for (Transfert t : operations) {
-                        if ("en attente".equalsIgnoreCase(t.getStatutTransfert())
-                                || "en cours".equalsIgnoreCase(t.getStatutTransfert())) {
+                        if ("en attente".equalsIgnoreCase(t.getStatutTransfert().getLibelle())
+                                || "en cours".equalsIgnoreCase(t.getStatutTransfert().getLibelle())) {
                             request.getSession().setAttribute("erreur",
                                     "Impossible de supprimer : Le client possède des transactions en cours !");
                             response.sendRedirect("admin-dashboard");

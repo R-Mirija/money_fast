@@ -2,6 +2,8 @@ package com.moneyfast.model;
 
 import java.time.LocalDateTime;
 
+import com.moneyfast.enums.StatutTransfertEnum;
+
 public class Transfert {
     private Long idTransfert;
     private int codeTransfert;
@@ -15,7 +17,7 @@ public class Transfert {
     private int deviseDestination;
     private LocalDateTime dateTransfert;
     private String raison;
-    private String statutTransfert;
+    private StatutTransfertEnum statutTransfert;
     private LocalDateTime dateConfirmation;
     private String referenceExterne;
 
@@ -23,9 +25,9 @@ public class Transfert {
     }
 
     public Transfert(Long idTransfert, int codeTransfert, Long idCompteSource, Long idCompteDestination,
-                     double montantEnvoye, double montantRecu, double frais, int tauxApplique,
-                     int deviseSource, int deviseDestination, LocalDateTime dateTransfert, String raison,
-                     String statutTransfert, LocalDateTime dateConfirmation, String referenceExterne) {
+            double montantEnvoye, double montantRecu, double frais, int tauxApplique,
+            int deviseSource, int deviseDestination, LocalDateTime dateTransfert, String raison,
+            StatutTransfertEnum statutTransfert, LocalDateTime dateConfirmation, String referenceExterne) {
         this.idTransfert = idTransfert;
         this.codeTransfert = codeTransfert;
         this.idCompteSource = idCompteSource;
@@ -143,11 +145,11 @@ public class Transfert {
         this.raison = raison;
     }
 
-    public String getStatutTransfert() {
+    public StatutTransfertEnum getStatutTransfert() {
         return statutTransfert;
     }
 
-    public void setStatutTransfert(String statutTransfert) {
+    public void setStatutTransfert(StatutTransfertEnum statutTransfert) {
         this.statutTransfert = statutTransfert;
     }
 

@@ -80,7 +80,7 @@ public class RecuPDFServlet extends HttpServlet {
             document.add(new Paragraph("Code de Transaction : " + t.getCodeTransfert(), boldFont));
             document.add(new Paragraph("Date du transfert : " + t.getDateTransfert(), normalFont));
             document.add(new Paragraph("Motif : " + t.getRaison(), normalFont));
-            document.add(new Paragraph("Statut : " + t.getStatutTransfert().toUpperCase(), boldFont));
+            document.add(new Paragraph("Statut : " + t.getStatutTransfert().getLibelle().toUpperCase(), boldFont));
             document.add(new Paragraph("                          "));
 
             // Section Expéditeur

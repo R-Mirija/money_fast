@@ -1,6 +1,8 @@
 package com.moneyfast.service;
 
 import java.time.LocalDateTime;
+
+import com.moneyfast.enums.StatutTransfertEnum;
 import com.moneyfast.model.Client;
 import com.moneyfast.model.Compte;
 import com.moneyfast.model.Frais;
@@ -112,7 +114,7 @@ public class TransfertService {
         t.setDeviseDestination(dest.getDevise());
         t.setDateTransfert(LocalDateTime.now());
         t.setRaison(raison);
-        t.setStatutTransfert("confirmé");
+        t.setStatutTransfert(StatutTransfertEnum.COMPLETE);
         t.setDateConfirmation(LocalDateTime.now());
         t.setReferenceExterne("EXT-" + t.getCodeTransfert());
 

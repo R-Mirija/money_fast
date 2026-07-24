@@ -1,0 +1,14 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<div class="sidebar">
+  <a href="#" class="sidebar-logo">&nbsp;</a>
+  <div class="sidebar-menu">
+    <a href="#" class="sidebar-icon active" title="Dashboard">
+      <i class="fi fi-rr-home"></i>
+    </a>
+    <a href="admin-portal?action=logout" class="sidebar-icon" title="Déconnexion">
+      <i class="fi fi-rr-exit"></i>
+    </a>
+  </div>
+  <div style="font-size: 11px; color: #555;">&nbsp;</div>
+</div>

@@ -1,0 +1,162 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<!-- LIGNE 2 : Restrictions de Pays, Taux de Change, Frais d'envoi -->
+<div class="row g-4 mt-2">
+
+  <!-- 1. Restrictions de Pays -->
+  <div class="col-lg-4 col-md-6">
+    <div class="bottom-card" style="min-height: 380px;">
+      <div class="badge-top-icon">
+        <i class="fi fi-rr-globe"></i>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+        <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Restrictions de Pays</h6>
+        <input type="text" id="countrySearch" class="form-control form-control-dashboard py-1" style="max-width: 140px; font-size: 11px;" placeholder="Chercher..." onkeyup="filterCountries()">
+      </div>
+
+      <div style="max-height: 250px; overflow-y: auto;">
+        <table class="table align-middle" style="font-size: 12px; margin-bottom: 0;" id="countryTable">
+          <tbody>
+            <% if (listePays != null) {
+              for (Pays p : listePays) {
+                boolean isAutorise = "autorise".equals(p.getStatut());
+              %>
+              <tr>
+                <td class="fw-bold"><%= p.getLibelle() %></td>
+                <td>
+                  <span class="badge <%= isAutorise ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 10px;">
+                    <%= isAutorise ? "Autorisé" : "Interdit" %>
+                  </span>
+                </td>
+                <td class="text-end">
+                  <form action="admin-dashboard" method="post" class="d-inline">
+                    <input type="hidden" name="action" value="togglePays">
+                    <input type="hidden" name="idPays" value="<%= p.getIdPays() %>">
+                    <input type="hidden" name="statut" value="<%= p.getStatut() %>">
+                    <button type="submit" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1" style="font-size: 10px;">
+                      Modifier
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <% } } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Taux de Change Actifs -->
+    <div class="col-lg-4 col-md-6">
+      <div class="bottom-card" style="min-height: 380px;">
+        <div class="badge-top-icon">
+          <i class="fi fi-rr-chart-histogram"></i>
+        </div>
+        <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Taux de Change</h6>
+        <div style="max-height: 250px; overflow-y: auto;">
+          <table class="table align-middle" style="font-size: 12px; margin-bottom: 0;">
+            <thead>
+              <tr>
+                <th>Devise to Devise</th>
+                <th>Taux</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (listeTaux != null) {
+                for (TauxDeChange t : listeTaux) {
+                  String labelSrc = metadataRepository.findLibelleDevise(t.getDeviseSource());
+                  String labelDest = metadataRepository.findLibelleDevise(t.getDeviseDestination());
+                %>
+                <tr>
+                  <td class="fw-bold"><%= labelSrc %> to <%= labelDest %></td>
+                  <td>
+                    <form action="admin-dashboard" method="post" class="d-flex align-items-center">
+                      <input type="hidden" name="action" value="updateTaux">
+                      <input type="hidden" name="idTaux" value="<%= t.getIdTaux() %>">
+                      <div class="input-group input-group-sm" style="max-width: 140px;">
+                        <span class="input-group-text bg-light fw-bold" style="font-size: 11px;">1=</span>
+                        <input type="text" name="nouveauTaux" class="form-control text-center fw-bold" value="<%= df.format(t.getTauxApplication()) %>" required style="font-size: 11px;">
+                        <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour la valeur" style="padding: 9px 12px;">
+                          <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                  <td class="text-end">
+                    <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce taux de change ?');" class="d-inline">
+                      <input type="hidden" name="action" value="deleteTaux">
+                      <input type="hidden" name="idTaux" value="<%= t.getIdTaux() %>">
+                      <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer définitivement">
+                        <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <% } } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Frais d'envoi -->
+      <div class="col-lg-4 col-md-6">
+        <div class="bottom-card" style="min-height: 380px;">
+          <div class="badge-top-icon">
+            <i class="fi fi-rr-dollar"></i>
+          </div>
+          <h6 class="fw-bold text-uppercase text-muted mb-3 mt-3" style="font-size: 11px; letter-spacing: 0.5px;">Frais d'envoi</h6>
+          <div style="max-height: 250px; overflow-y: auto;">
+            <table class="table align-middle" style="font-size: 11px; margin-bottom: 0;">
+              <thead>
+                <tr>
+                  <th>Tranche</th>
+                  <th>Type</th>
+                  <th>Valeur (Éditer)</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (listeFrais != null) {
+                  for (Frais f : listeFrais) {
+                    String labelDevise = metadataRepository.findLibelleDevise(f.getDeviseFrais());
+                  %>
+                  <tr>
+                    <td>De <strong><%= df.format(f.getMontantMin()) %></strong> à <strong><%= df.format(f.getMontantMax()) %> <%= labelDevise %></strong></td>
+                    <td>
+                      <span class="badge bg-light text-dark border" style="font-size: 10px;">
+                        <%= f.getTypeFrais() == 1 ? "%" : "Montant" %>
+                      </span>
+                    </td>
+                    <td>
+                      <form action="admin-dashboard" method="post" class="d-flex align-items-center">
+                        <input type="hidden" name="action" value="updateFrais">
+                        <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
+                        <div class="input-group input-group-sm" style="max-width: 110px;">
+                          <input type="text" name="nouvelleValeur" class="form-control text-center fw-bold" value="<%= df.format(f.getValeurFrais()) %>" required style="font-size: 11px; border-radius: 8px 0 0 8px;">
+                          <button class="btn btn-dark d-flex align-items-center justify-content-center" type="submit" title="Mettre à jour" style="padding: 9px 12px; border-radius: 0 8px 8px 0;">
+                            <i class="fi fi-rr-disk" style="font-size: 13px; line-height: 1;"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </td>
+                    <td class="text-end">
+                      <form action="admin-dashboard" method="post" onsubmit="return confirm('Voulez-vous supprimer définitivement ce barème de frais ?');" class="d-inline">
+                        <input type="hidden" name="action" value="deleteFrais">
+                        <input type="hidden" name="idFrais" value="<%= f.getIdFrais() %>">
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px; padding: 0;" title="Supprimer">
+                          <i class="fi fi-rr-trash" style="font-size: 11px; line-height: 1;"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% } } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>

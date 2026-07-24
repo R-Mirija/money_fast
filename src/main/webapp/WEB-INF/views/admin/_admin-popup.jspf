@@ -1,0 +1,25 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<button class="fab-admin" onclick="toggleAdminPopup()" title="Équipe d'Administration">
+  <i class="fi fi-rr-users-alt" style="line-height: 1; display: block; margin-top: 4px;"></i>
+</button>
+
+<div id="adminPopup" class="admin-popup-panel">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 11px; letter-spacing: 0.5px;">Nouveau Admin</h6>
+    <button type="button" class="btn-close-popup" onclick="toggleAdminPopup()">&times;</button>
+  </div>
+  <form action="admin-dashboard" method="post">
+    <input type="hidden" name="action" value="addAdmin">
+    <div class="mb-2">
+      <input type="text" name="username" class="form-control form-control-dashboard" placeholder="Nom d'utilisateur" required>
+    </div>
+    <div class="mb-2">
+      <input type="email" name="email" class="form-control form-control-dashboard" placeholder="Adresse Email" required>
+    </div>
+    <div class="mb-3">
+      <input type="password" name="password" class="form-control form-control-dashboard" placeholder="Mot de passe" required>
+    </div>
+    <button type="submit" class="btn-admin-submit py-2">Enregistrer</button>
+  </form>
+</div>

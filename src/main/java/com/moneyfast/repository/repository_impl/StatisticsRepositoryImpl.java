@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ import com.moneyfast.repository.StatisticsRepository;
 public class StatisticsRepositoryImpl implements StatisticsRepository {
 
   @Override
-  public Map<String, Double> getVolumeParDevise(Timestamp dateDebut, Timestamp dateFin) {
+  public Map<String, Double> getVolumeParDevise(LocalDateTime dateDebut, LocalDateTime dateFin) {
     Map<String, Double> volumes = new LinkedHashMap<>();
 
     String sql = """
@@ -38,8 +38,8 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
     try (Connection cn = DBConnection.getConnection();
         PreparedStatement ps = cn.prepareStatement(sql)) {
 
-      ps.setTimestamp(1, dateDebut);
-      ps.setTimestamp(2, dateFin);
+      ps.setObject(1, dateDebut);
+      ps.setObject(2, dateFin);
 
       try (ResultSet rs = ps.executeQuery()) {
         while (rs.next()) {
@@ -57,12 +57,12 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
   @Override
   public List<ActiveClientStat> findTopClients(TopClientFilterEnum filter,
       int limit,
-      Timestamp dateDebut,
-      Timestamp dateFin) {
+      LocalDateTime dateDebut,
+      LocalDateTime dateFin) {
 
     List<ActiveClientStat> list = new ArrayList<>();
 
-    // Sécurité pour l'injection SQL sur l'ORDER BY
+    // Sécurité sur l'ORDER BY
     String orderBy = (filter == TopClientFilterEnum.BY_TOTAL_MONTANT)
         ? "totalMontant"
         : "transactionsCount";
@@ -82,16 +82,15 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
         WHERE LOWER(t.statut_transfert) IN ('confirmé', 'confirme', 'valide', 'termine')
           AND t.date_transfert BETWEEN ? AND ?
         GROUP BY c.id_client, c.nom, c.prenom
-        ORDER BY """ + orderBy + """
-        DESC
+        ORDER BY %s DESC
         LIMIT ?
-        """;
+        """.formatted(orderBy);
 
     try (Connection cn = DBConnection.getConnection();
         PreparedStatement ps = cn.prepareStatement(sql)) {
 
-      ps.setTimestamp(1, dateDebut);
-      ps.setTimestamp(2, dateFin);
+      ps.setObject(1, dateDebut);
+      ps.setObject(2, dateFin);
       ps.setInt(3, limit);
 
       try (ResultSet rs = ps.executeQuery()) {
@@ -120,8 +119,8 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
   @Override
   public Statistics getGlobalStatistics(TopClientFilterEnum filter,
       int topLimit,
-      Timestamp dateDebut,
-      Timestamp dateFin) {
+      LocalDateTime dateDebut,
+      LocalDateTime dateFin) {
 
     Statistics statistics = new Statistics();
     statistics.setTotalRecette(getTotalRecette(dateDebut, dateFin));
@@ -131,7 +130,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
     return statistics;
   }
 
-  private double getTotalRecette(Timestamp dateDebut, Timestamp dateFin) {
+  private double getTotalRecette(LocalDateTime dateDebut, LocalDateTime dateFin) {
     String sql = """
         SELECT COALESCE(SUM(frais), 0)
         FROM transferts
@@ -141,8 +140,8 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
     try (Connection cn = DBConnection.getConnection();
         PreparedStatement ps = cn.prepareStatement(sql)) {
 
-      ps.setTimestamp(1, dateDebut);
-      ps.setTimestamp(2, dateFin);
+      ps.setObject(1, dateDebut);
+      ps.setObject(2, dateFin);
 
       try (ResultSet rs = ps.executeQuery()) {
         if (rs.next()) {

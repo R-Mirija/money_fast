@@ -1,0 +1,164 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<!-- LIGNE 1 : Votre solde, Ajouter un Taux, Ajouter un Frais, Clients Actifs -->
+<div class="row g-4 mb-5">
+
+  <!-- 1. Votre solde -->
+  <div class="col-lg-3 col-md-6">
+    <div class="overview-card d-flex flex-column justify-content-between" style="min-height: 250px;">
+      <div>
+        <h5 class="fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 1px; opacity: 0.8;">Votre solde</h5>
+        <h2 class="fw-extrabold mb-0" style="font-size: 28px;"><%= stats.getTotalRecette() %> EUR</h2>
+      </div>
+      <div style="font-size: 11px; opacity: 0.7; text-transform: uppercase; border-top: 1px solid rgba(255,255,255,0.15);" class="pt-2">
+        Money Fast
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Ajouter un Taux -->
+  <div class="col-lg-3 col-md-6">
+    <div class="sub-card d-flex flex-column justify-content-between" style="min-height: 250px;">
+      <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Ajouter un Taux</h6>
+      <form action="admin-dashboard" method="post">
+        <input type="hidden" name="action" value="addTaux">
+
+        <div class="row g-2 mb-2">
+          <div class="col-4">
+            <input type="text" class="form-control form-control-dashboard text-center fw-bold bg-light" value="1" readonly>
+          </div>
+          <div class="col-8">
+            <select name="deviseSource" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 10px;">
+              <% if (listeDevises != null) {
+              for (Devise d : listeDevises) { %>
+              <option value="<%= d.getIdDevise() %>"><%= d.getLibelle() %></option>
+              <% } } %>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-4">
+            <input type="text" name="valeurTaux" class="form-control form-control-dashboard text-center fw-bold" placeholder="Taux" required style="padding: 8px 6px;">
+          </div>
+          <div class="col-8">
+            <select name="deviseDestination" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 10px;">
+              <% if (listeDevises != null) {
+              for (Devise d : listeDevises) { %>
+              <option value="<%= d.getIdDevise() %>"><%= d.getLibelle() %></option>
+              <% } } %>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-admin-submit">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Ajouter un Frais -->
+  <div class="col-lg-3 col-md-6">
+    <div class="sub-card d-flex flex-column justify-content-between" style="min-height: 250px;">
+      <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Ajouter un Frais</h6>
+      <form action="admin-dashboard" method="post">
+        <input type="hidden" name="action" value="addFrais">
+
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <input type="text" name="montantMin" class="form-control form-control-dashboard" placeholder="Min" required style="font-size: 12px; padding: 8px 10px;">
+          </div>
+          <div class="col-6">
+            <input type="text" name="montantMax" class="form-control form-control-dashboard" placeholder="Max" required style="font-size: 12px; padding: 8px 10px;">
+          </div>
+        </div>
+
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <select name="typeFrais" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 6px;">
+              <option value="1">%</option>
+              <option value="2">Montant</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <input type="text" name="valeurFrais" class="form-control form-control-dashboard" placeholder="Valeur" required style="font-size: 12px; padding: 8px 10px;">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <select name="deviseFrais" class="form-select form-control-dashboard" required style="font-size: 11px; padding: 8px 10px;">
+            <% if (listeDevises != null) {
+            for (Devise d : listeDevises) { %>
+            <option value="<%= d.getIdDevise() %>"><%= d.getLibelle() %></option>
+            <% } } %>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-admin-submit">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Clients Actifs -->
+  <div class="col-lg-3 col-md-6">
+    <div class="sub-card d-flex flex-column justify-content-between" style="min-height: 250px; background-color: #ffffff;">
+      <h6 class="fw-bold text-uppercase text-muted mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Clients Actifs</h6>
+      <div style="max-height: 150px; overflow-y: auto; padding-right: 5px;">
+        <% if (listeClients != null && !listeClients.isEmpty()) {
+          for (Client c : listeClients) {
+            Compte co = compteRepository.findByTelephone(c.getNumeroTelephone());
+            double solde = co != null ? co.getSolde() : 0.00;
+            String initiales = "" + c.getNom().charAt(0) + c.getPrenom().charAt(0);
+          %>
+          <div class="swipe-container mb-2" id="swipe-container-<%= c.getIdClient() %>">
+            <div class="swipe-behind">
+              <form action="admin-dashboard" method="post" id="delete-form-<%= c.getIdClient() %>" onsubmit="return confirmDelete(event, '<%= c.getIdClient() %>')">
+                <input type="hidden" name="action" value="deleteClient">
+                <input type="hidden" name="idClient" value="<%= c.getIdClient() %>">
+                <button type="submit" class="border-0 bg-transparent text-white w-100 h-100 d-flex align-items-center justify-content-center" style="width: 80px;">
+                  <i class="fi fi-rr-trash" style="font-size: 14px;"></i>
+                </button>
+              </form>
+            </div>
+
+            <div class="swipe-front d-flex align-items-center justify-content-between p-2"
+            id="swipe-front-<%= c.getIdClient() %>"
+            onmousedown="startSwipe(event, '<%= c.getIdClient() %>')"
+            ontouchstart="startSwipe(event, '<%= c.getIdClient() %>')">
+            <div class="d-flex align-items-center gap-2">
+              <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 11px;"><%= initiales.toUpperCase() %></div>
+              <div>
+                <div class="fw-bold" style="font-size: 11px; line-height: 1.1;"><%= c.getNom().toUpperCase() %></div>
+                <div class="text-muted" style="font-size: 9px;"><%= c.getNumeroTelephone() %></div>
+              </div>
+            </div>
+            <div class="text-end pe-1">
+              <% if (co != null) {
+                boolean isActif = "actif".equalsIgnoreCase(co.getStatutCompte());
+              %>
+              <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
+                <span class="badge <%= isActif ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger" %>" style="font-size: 9px; padding: 4px 8px; border-radius: 6px;">
+                  <%= isActif ? "Actif" : "Bloqué" %>
+                </span>
+                <form action="admin-dashboard" method="post" class="d-inline">
+                  <input type="hidden" name="action" value="toggleCompteStatut">
+                  <input type="hidden" name="numeroCompte" value="<%= co.getNumeroCompte() %>">
+                  <input type="hidden" name="statut" value="<%= co.getStatutCompte() %>">
+                  <input type="hidden" name="telephone" value="<%= c.getNumeroTelephone() %>">
+                  <button type="submit" class="border-0 bg-transparent p-0 d-inline-flex align-items-center" title="<%= isActif ? "Bloquer le compte" : "Débloquer le compte" %>" style="transition: transform 0.2s ease;">
+                    <i class="fi <%= isActif ? "fi-rr-unlock text-success" : "fi-rr-lock text-danger" %>" style="font-size: 12px; line-height: 1;"></i>
+                  </button>
+                </form>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        <% } } else { %>
+        <div class="text-muted text-center py-3" style="font-size: 11px;">Aucun client</div>
+        <% } %>
+      </div>
+      <div class="text-center text-muted" style="font-size: 9px; opacity: 0.7; margin-top: 5px;">Supprimer &gt;</div>
+    </div>
+  </div>
+
+</div>

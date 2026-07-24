@@ -1,0 +1,29 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<%-- Toast erreur --%>
+<%
+    String messageErreur = (String) session.getAttribute("erreur");
+    if (messageErreur != null) {
+        session.removeAttribute("erreur");
+%>
+<div id="toast-error" class="toast-pinterest" role="alert">
+    <span><%= messageErreur %></span>
+    <button type="button" class="btn-close-toast" onclick="closeToast()">&times;</button>
+</div>
+<%
+    }
+%>
+
+<%-- Toast succès --%>
+<%
+    String messageSucces = (String) session.getAttribute("succes");
+    if (messageSucces != null) {
+        session.removeAttribute("succes");
+%>
+<div id="toast-success" class="toast-success-pinterest" role="alert">
+    <span><%= messageSucces %></span>
+    <button type="button" class="btn-close-toast" onclick="closeSuccessToast()">&times;</button>
+</div>
+<%
+    }
+%>
